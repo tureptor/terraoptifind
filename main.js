@@ -1,5 +1,45 @@
 const people = Object.keys(npcdict)
 
+var estimatedBrowserSpeed = 0.000005
+var numOfPeopleinGroups = 58125
+function updateNumPossibleGroups() {
+  // count number of npcs we can use
+  let n = 0
+  for (const person of people) {
+    if (document.getElementById(person + "Checkbox").checked) {
+      n += 1
+    }
+  }
+
+  let minGroupSize = document.getElementById("minGroupSize").value
+  let maxGroupSize = document.getElementById("maxGroupSize").value
+
+
+  // build pascal's triangle so we can do n choose k
+  
+  let pascals = [[1]]
+  for (let i = 1; i <= n; i++) {
+    // add ith row
+    let newRow = [1]
+    for (let j = 1; j < i; j++) {
+      newRow.push(pascals[i-1][j-1] + pascals[i-1][j])
+    }
+    newRow.push(1)
+    pascals.push(newRow)
+  }
+
+  numOfPeopleInGroups = 0
+  let numOfGroups = 0
+  for (let k = minGroupSize; k <= maxGroupSize; k++) {
+    // add n choose k for every k
+    numOfGroups += pascals[n][k]
+    numOfPeopleInGroups += pascals[n][k] * k
+  }
+  document.getElementById("numPossibleGroups").value = numOfGroups
+  // 1.07 is to take into account search speed, not just cache gen speed
+  document.getElementById("estimatedComputationTime").value = (numOfPeopleInGroups * estimatedBrowserSpeed * 1.07).toFixed(1)
+}
+
 function genNPCtable() {
   let output = document.getElementById('npcTableDiv');
   let tableHTML = "<table>"
@@ -11,7 +51,7 @@ function genNPCtable() {
     tableHTML += "<td>" + person + "</td>"
     // "should use?" checkbox
     tableHTML += "<td style=\"text-align:center\"> <input style=\"width:1.5em; height:1.5em\""
-    tableHTML += "type=\"checkbox\" id=\"" + person + "Checkbox\" checked> </td>"
+    tableHTML += "type=\"checkbox\" id=\"" + person + "Checkbox\" onchange=\"updateNumPossibleGroups()\"  checked> </td>"
     // weighting
     tableHTML += "<td style=\"text-align:center\"> <input style=\"width:5em\" type=number "
     tableHTML += "id=\"" + person + "Weighting\" min=0 value=1.0> </td>" 
@@ -22,6 +62,7 @@ function genNPCtable() {
   output.innerHTML = tableHTML;
 }
 genNPCtable()
+updateNumPossibleGroups()
 
 function genResultsTable(groups) {
   let output = document.getElementById("resultTableDiv");
@@ -58,6 +99,8 @@ function startSearch() {
   const searcher = new Searcher(peopleWeCanUse, minGroupSize, maxGroupSize)
   let groups = searcher.search()
   genResultsTable(groups)
+  estimatedBrowserSpeed = document.getElementById("timeElapsedCache").value / numOfPeopleInGroups
+  updateNumPossibleGroups()
 }
 
 

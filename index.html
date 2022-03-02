@@ -2,13 +2,24 @@
 
 <div>
   <label for="minGroupSize">Min num of NPCs per group:</label>
-  <input type="number" id="minGroupSize" min="1" max="25" value="1">
+  <input type="number" id="minGroupSize" min="1" max="25" value="1" onchange="updateNumPossibleGroups()">
 </div>
 <div>
   <label for="maxGroupSize">Max num of NPCs per group:</label>
-  <input type="number" id="maxGroupSize" min="1" max="25" value="4">
-  <label>(Bigger than 4 is very slow and pointless.)</label>
+  <input type="number" id="maxGroupSize" min="1" max="25" value="4" onchange="updateNumPossibleGroups()">
 </div>
+
+<div>
+  <label>Number of possible groups:</label>
+  <output id="numPossibleGroups"></output>
+</div>
+
+<div>
+  <label>Estimated computation time:</label>
+  <output id="estimatedComputationTime"></output>
+  <label>secs (Search with defaults to calibrate for device)</label>
+</div>
+
 
 <div style="overflow:scroll; height:25em">
   <div id="npcTableDiv"></div>
