@@ -58,7 +58,7 @@ function genNPCtable() {
     tableHTML += "</tr>"
   }
   tableHTML += "</table>";
-  output.innerHTML = tableHTML;
+  output.innerHTML += tableHTML;
 }
 genNPCtable()
 updateNumPossibleGroups()
@@ -81,7 +81,8 @@ function genResultsTable(groups) {
     // remove extra comma and space before ending row
     tableHTML = tableHTML.slice(0, -2) + "</td></tr>"
   }
-  output.innerHTML = tableHTML
+
+  output.innerHTML = tableHTML + "</table><br>" + output.innerHTML
 }
   
 
@@ -97,9 +98,9 @@ function startSearch() {
   }
   let minGroupSize = document.getElementById("minGroupSize").value
   let maxGroupSize = document.getElementById("maxGroupSize").value
+  document.getElementById("resultTableDiv").innerHTML = ""
   const searcher = new Searcher(peopleWeCanUse, minGroupSize, maxGroupSize)
-  let groups = searcher.search()
-  genResultsTable(groups)
+  searcher.search()
   estimatedBrowserSpeed = (+document.getElementById("timeElapsedCache").value + +document.getElementById("timeElapsedSearch").value) / numOfPeopleInGroups
   updateNumPossibleGroups()
 }

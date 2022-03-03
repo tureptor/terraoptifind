@@ -47,10 +47,12 @@ class Searcher {
   }
 
   handleNewCombination(newCombination, newHappiness) {
+    if ( (this.#bestHappinessSoFar).toFixed(3) > newHappiness.toFixed(3)) { document.getElementById("resultTableDiv").innerHTML = "" }
     this.#newBestSolutionsFound += 1
     this.#bestCombinationSoFar = newCombination
     this.#bestHappinessSoFar = newHappiness
     document.getElementById("newBestSolutionsFound").innerHTML = this.#newBestSolutionsFound
+    genResultsTable(newCombination)
   }
 
   findCombination(prefix, remainingPeople, minIndex, prefixHappiness) {
@@ -64,7 +66,7 @@ class Searcher {
       let group = this.#possibleGroups[i][0]
       let groupAvgHappiness = this.#possibleGroups[i][1]
       let bestPossibleHappiness = prefixHappiness + sumOfWeights(remainingPeople) * groupAvgHappiness
-      if ((bestPossibleHappiness).toFixed(2) >= (this.#bestHappinessSoFar).toFixed(2)) {
+      if ((bestPossibleHappiness).toFixed(2) > (this.#bestHappinessSoFar).toFixed(2)) {
         this.#branchesPruned += 1
         return
       }
