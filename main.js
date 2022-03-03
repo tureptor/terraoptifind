@@ -1,6 +1,6 @@
 const people = Object.keys(npcdict)
 
-var estimatedBrowserSpeed = 0.000005
+var estimatedBrowserSpeed = 0.00001
 var numOfPeopleinGroups = 58125
 function updateNumPossibleGroups() {
   // count number of npcs we can use
@@ -36,8 +36,7 @@ function updateNumPossibleGroups() {
     numOfPeopleInGroups += pascals[n][k] * k
   }
   document.getElementById("numPossibleGroups").value = numOfGroups
-  // 1.07 is to take into account search speed, not just cache gen speed
-  document.getElementById("estimatedComputationTime").value = (numOfPeopleInGroups * estimatedBrowserSpeed * 1.07).toFixed(1)
+  document.getElementById("estimatedComputationTime").value = (numOfPeopleInGroups * estimatedBrowserSpeed).toFixed(1)
 }
 
 function genNPCtable() {
@@ -100,7 +99,7 @@ function startSearch() {
   const searcher = new Searcher(peopleWeCanUse, minGroupSize, maxGroupSize)
   let groups = searcher.search()
   genResultsTable(groups)
-  estimatedBrowserSpeed = document.getElementById("timeElapsedCache").value / numOfPeopleInGroups
+  estimatedBrowserSpeed = (+document.getElementById("timeElapsedCache").value + +document.getElementById("timeElapsedSearch").value) / numOfPeopleInGroups
   updateNumPossibleGroups()
 }
 

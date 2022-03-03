@@ -47,6 +47,15 @@ function oneHappiness(name, biome, neighbours) {
   return +happ.toFixed(2) * npc["weighting"]
 }
 
+
+function sumOfWeights(group) {
+  let totalWeight = 0
+  for (const person of group) {
+    totalWeight += npcdict[person]["weighting"]
+  }
+  return totalWeight
+}
+
 // input group of names of npcs
 // return array of the biome(s) which minimise happiness
 function bestBiomesForGroup(group) {
@@ -72,18 +81,17 @@ function bestBiomesForGroup(group) {
 // return the average happiness of these npcs (divide by sum of weighting)
 // each npc has all the other ones as neigbours
 // automatically chooses biome that minimises happiness
-function groupHappiness(group) {
+function groupHappiness(group, returnSumWeights=false) {
   // dont care which biome, so just pick first returned one
   let biome = bestBiomesForGroup(group)[0]
-  let sumOfWeights = 0.0
   let thisGroupHappiness = 0.0
   
   for (const person of group) {
     thisGroupHappiness += oneHappiness(person, biome,
       group.filter((name,index) => name !== person))
-    sumOfWeights += npcdict[person]["weighting"]
   }
 
-
-  return thisGroupHappiness / sumOfWeights
+  // return sum of weights optionally to avoid duplicate computation in generateArrayOfGroups
+  if (returnSumWeights) {return [thisGroupHappiness / sumOfWeights(group), sumOfWeights(group)] }
+  return thisGroupHappiness / sumOfWeights(group)
 }

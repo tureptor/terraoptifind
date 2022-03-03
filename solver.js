@@ -22,7 +22,8 @@ function generateArrayOfGroups(minGroupSize, maxGroupSize, people) {
   const arrayOfGroups = []
   for (let groupSize = minGroupSize; groupSize <= maxGroupSize; groupSize++) {
     for (const group of combinations(groupSize, people)) {
-      arrayOfGroups.push([group, groupHappiness(group)])
+      groupHappAndWeights = groupHappiness(group, true)
+      arrayOfGroups.push([group, groupHappAndWeights[0], groupHappAndWeights[1]])
     }
   }
   arrayOfGroups.sort((a,b) => a[1] - b[1])
@@ -62,11 +63,7 @@ class Searcher {
     for (let i=minIndex; i < this.#possibleGroups.length; i++) {
       let group = this.#possibleGroups[i][0]
       let groupAvgHappiness = this.#possibleGroups[i][1]
-      let sumOfWeights = 0
-      for (const person of remainingPeople) {
-        sumOfWeights += npcdict[person]["weighting"]
-      }
-      let bestPossibleHappiness = prefixHappiness + sumOfWeights * groupAvgHappiness
+      let bestPossibleHappiness = prefixHappiness + sumOfWeights(remainingPeople) * groupAvgHappiness
       if ((bestPossibleHappiness).toFixed(2) >= (this.#bestHappinessSoFar).toFixed(2)) {
         this.#branchesPruned += 1
         return
@@ -75,7 +72,7 @@ class Searcher {
         let newPrefix = prefix.slice()
         newPrefix.push(group)
         let newRemainingPeople = remainingPeople.filter(person => !(group.includes(person)))
-        let newPrefixHappiness = prefixHappiness + group.length * groupAvgHappiness
+        let newPrefixHappiness = prefixHappiness + this.#possibleGroups[i][2] * groupAvgHappiness
         this.findCombination(newPrefix, newRemainingPeople, i+1, newPrefixHappiness)
       }
     }
