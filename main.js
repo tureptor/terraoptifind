@@ -64,6 +64,7 @@ genNPCtable()
 updateNumPossibleGroups()
 
 function genResultsTable(groups) {
+  groups.sort((a,b) => biomes.indexOf(bestBiomesForGroup(a)[0]) -  biomes.indexOf(bestBiomesForGroup(b)[0]))
   let output = document.getElementById("resultTableDiv");
   let tableHTML = "<table>"
   tableHTML += "<tr> <th>Biome(s) for group</th>"
