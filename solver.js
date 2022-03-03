@@ -47,7 +47,7 @@ class Searcher {
 
   handleNewCombination(newCombination, newHappiness) {
     this.#newBestSolutionsFound += 1
-    this.#bestCombinationSoFar = newCombination //.slice() ?
+    this.#bestCombinationSoFar = newCombination
     this.#bestHappinessSoFar = newHappiness
     document.getElementById("newBestSolutionsFound").innerHTML = this.#newBestSolutionsFound
   }
@@ -62,8 +62,12 @@ class Searcher {
     for (let i=minIndex; i < this.#possibleGroups.length; i++) {
       let group = this.#possibleGroups[i][0]
       let groupAvgHappiness = this.#possibleGroups[i][1]
-      let bestPossibleHappiness = prefixHappiness + remainingPeople.length * groupAvgHappiness
-      if (bestPossibleHappiness > this.#bestHappinessSoFar) {
+      let sumOfWeights = 0
+      for (const person of remainingPeople) {
+        sumOfWeights += npcdict[person]["weighting"]
+      }
+      let bestPossibleHappiness = prefixHappiness + sumOfWeights * groupAvgHappiness
+      if ((bestPossibleHappiness).toFixed(2) >= (this.#bestHappinessSoFar).toFixed(2)) {
         this.#branchesPruned += 1
         return
       }

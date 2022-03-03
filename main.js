@@ -75,7 +75,8 @@ function genResultsTable(groups) {
     for (const person of group) {
       tableHTML += person
       let neighbours = group.filter((name,index) => name !== person)
-      tableHTML += "(" + biomes.map(biome => (oneHappiness(person,biome,neighbours)/npcdict[person]["weighting"]).toFixed(2)).join(", ") + "), "
+      let personHappinesses = biomes.map(biome => (oneHappiness(person,biome,neighbours)/npcdict[person]["weighting"]).toFixed(2))
+      tableHTML += "(" + personHappinesses.join(", ") + "), "
     }
     // remove extra comma and space before ending row
     tableHTML = tableHTML.slice(0, -2) + "</td></tr>"

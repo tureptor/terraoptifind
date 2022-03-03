@@ -38,6 +38,10 @@ function oneHappiness(name, biome, neighbours) {
     if (npc["hates"].includes(n))    { happ *= 1.12 }
   }
 
+  // enforce upper/lower bound on happiness
+  happ = Math.min(4/3, happ)
+  happ = Math.max(0.75, happ)
+
   // round to 2dp
   // weighting is how much we care about that npc
   return +happ.toFixed(2) * npc["weighting"]
