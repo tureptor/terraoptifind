@@ -7,7 +7,7 @@ function oneHappiness(name, biome, neighbours) {
   // crowdedness
   if (neighbours.length > 3) {
     happ *= 1.05 ** (neighbours.length - 3)
-  } else {
+  } else if (neighbours.length < 3) {
     happ *= 0.95
   }
 
