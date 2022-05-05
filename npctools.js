@@ -59,6 +59,7 @@ function sumOfWeights(group) {
 // input group of names of npcs
 // return array of the biome(s) which minimise happiness
 function bestBiomesForGroup(group) {
+  if (group.includes("Truffle")) { return ["Mushroom"] }
   let lowestHappinessSoFar = Infinity
   let bestBiomesSoFar = []
   for (const biome of biomes) {
