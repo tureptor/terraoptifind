@@ -6,7 +6,7 @@
 </div>
 <div>
   <label for="maxGroupSize">Max num of NPCs per group:</label>
-  <input type="number" id="maxGroupSize" min="1" max="25" value="4" onchange="updateNumPossibleGroups()">
+  <input type="number" id="maxGroupSize" min="1" max="25" value="3" onchange="updateNumPossibleGroups()">
 </div>
 
 <div>
@@ -35,7 +35,7 @@
 </div>
 
 <div>
-  <label>New best solutions found:</label>
+  <label>Tentative solutions improved on:</label>
   <output id="newBestSolutionsFound">0</output>
 </div>
 
@@ -47,6 +47,10 @@
 <div>
   <label>Time elapsed to find best solution(s) (seconds):</label>
   <output id="timeElapsedSearch">0.000</output>
+</div>
+
+<div>
+  <p>Equally good solutions are listed in order of discovery.</p>
 </div>
 
 <div>
