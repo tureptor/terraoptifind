@@ -20,10 +20,19 @@
   <label>secs (Search with defaults to calibrate for device)</label>
 </div>
 
+<div>
+  <div id="biomeTableDiv"></div>
+</div>
 
-<div style="overflow:scroll; height:25em">
+<div>
+  <button style="width:15em; height:4em" onclick="includePylonBiomes()">Select pylon biomes</button>
+  <label>Warning: Selecting certain biomes may increase computation time unpredictably.</label>
+</div>
+
+<div style="overflow:scroll; height:15em">
   <div id="npcTableDiv"></div>
 </div>
+
 
 <div>
   <button style="width:10em; height:4em" onclick="startSearch()">Start search</button>

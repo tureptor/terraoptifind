@@ -16,14 +16,16 @@ function * combinations(k, someArray, fromThisIndex=0) {
 
 // generates array of all combinations of people such that
 // minGroupSize <= combination.length <= maxGroupSize
-// each combination is paired with the average happiness
+// each combination is paired with the average happiness, the total weight, and its biome
 // array is sorted by average happiness (ascending)
 function generateArrayOfGroups(minGroupSize, maxGroupSize, people) {
   const arrayOfGroups = []
   for (let groupSize = minGroupSize; groupSize <= maxGroupSize; groupSize++) {
     for (const group of combinations(groupSize, people)) {
-      groupHappAndWeights = groupHappiness(group, true)
-      arrayOfGroups.push([group, groupHappAndWeights[0], groupHappAndWeights[1]])
+      let groupInfo = groupHappWeightBiomes(group)
+      for (const biome of groupInfo[2]) {
+        arrayOfGroups.push([group, groupInfo[0], groupInfo[1], biome])
+      }
     }
   }
   arrayOfGroups.sort((a,b) => a[1] - b[1])
@@ -39,15 +41,15 @@ class Searcher {
   #branchesPruned = 0
   #newBestSolutionsFound = 0
   #start = 0
-
-  constructor(people, minGroupSize, maxGroupSize) {
+  constructor(people, minGroupSize, maxGroupSize, minBiomes) {
     this.minGroupSize = minGroupSize
     this.maxGroupSize = maxGroupSize
     this.people = people
+    this.minBiomes = minBiomes
   }
 
   handleNewCombination(newCombination, newHappiness) {
-    if ( (this.#bestHappinessSoFar).toFixed(3) > newHappiness.toFixed(3)) { document.getElementById("resultTableDiv").innerHTML = "" }
+    if (this.#bestHappinessSoFar.toFixed(3) > newHappiness.toFixed(3)) { document.getElementById("resultTableDiv").innerHTML = "" }
     this.#newBestSolutionsFound += 1
     this.#bestCombinationSoFar = newCombination
     this.#bestHappinessSoFar = newHappiness
@@ -55,27 +57,33 @@ class Searcher {
     genResultsTable(newCombination)
   }
 
-  findCombination(prefix, remainingPeople, minIndex, prefixHappiness) {
-    if (minIndex > this.#possibleGroups.length - 1) {
-      return
-    }
+  findCombination(prefix, remainingPeople, minIndex, prefixHappiness, remainingBiomes) {
+    if (minIndex > this.#possibleGroups.length - 1) { return }
+    if (remainingPeople.length  < Math.max(this.minGroupSize, 2) * remainingBiomes.length) { return }
     if (remainingPeople.length === 0) {
       this.handleNewCombination(prefix, prefixHappiness)
     }
     for (let i=minIndex; i < this.#possibleGroups.length; i++) {
-      let group = this.#possibleGroups[i][0]
+      let group = [this.#possibleGroups[i][0], this.#possibleGroups[i][3]]
       let groupAvgHappiness = this.#possibleGroups[i][1]
       let bestPossibleHappiness = prefixHappiness + sumOfWeights(remainingPeople) * groupAvgHappiness
       if ((bestPossibleHappiness).toFixed(2) > (this.#bestHappinessSoFar).toFixed(2)) {
         this.#branchesPruned += 1
         return
       }
-      if (group.every(person => remainingPeople.includes(person))) {
+      if (group[0].every(person => remainingPeople.includes(person))) {
         let newPrefix = prefix.slice()
         newPrefix.push(group)
-        let newRemainingPeople = remainingPeople.filter(person => !(group.includes(person)))
+        let newRemainingPeople = remainingPeople.filter(person => !(group[0].includes(person)))
         let newPrefixHappiness = prefixHappiness + this.#possibleGroups[i][2] * groupAvgHappiness
-        this.findCombination(newPrefix, newRemainingPeople, i+1, newPrefixHappiness)
+        let newRemainingBiomes = []
+        if (group[0].length > 1) {
+          newRemainingBiomes = remainingBiomes.filter(biome => biome !== group[1])
+        }
+        else {
+          newRemainingBiomes = remainingBiomes.slice()
+        }
+        this.findCombination(newPrefix, newRemainingPeople, i+1, newPrefixHappiness, newRemainingBiomes)
       }
     }
   }
@@ -87,7 +95,7 @@ class Searcher {
     document.getElementById("timeElapsedCache").innerHTML = (
       (performance.now() - this.#start) / 1000).toFixed(3)
     this.#start = performance.now()
-    this.findCombination([], this.people, 0, 0)
+    this.findCombination([], this.people, 0, 0, this.minBiomes)
     document.getElementById("timeElapsedSearch").innerHTML = (
       (performance.now() - this.#start) / 1000).toFixed(3)
     document.getElementById("branchesPruned").innerHTML = this.#branchesPruned
