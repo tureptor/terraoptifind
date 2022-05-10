@@ -6,9 +6,9 @@ function oneHappiness(name, biome, neighbours) {
   
   
   if (name === "Princess") {
-	  if (neighbours.length < 2) { return 1.5 * npc["weighting"] }
-	  happ *= Math.pow(0.88, Math.min(3, neighbours.length))
-	  return +(Math.max(happ, 0.75)).toFixed(2)
+      if (neighbours.length < 2) { return 1.5 * npc["weighting"] }
+      happ *= Math.pow(0.88, Math.min(3, neighbours.length))
+      return +(Math.max(happ, 0.75)).toFixed(2)
   }
   
   
@@ -20,7 +20,7 @@ function oneHappiness(name, biome, neighbours) {
   }
 
   // right biome
-  if (biome === npc["biome_liked"]) {
+  if (biome.includes(npc["biome_liked"])) {
     // too lazy to make "biome_loved/hated" just for santa
     if (name === "Santa Claus") {
       happ *= 0.88
@@ -30,7 +30,7 @@ function oneHappiness(name, biome, neighbours) {
   }
 
   // wrong biome
-  if (biome === npc["biome_disliked"]) {
+  else if (biome.includes(npc["biome_disliked"])) {
     if (name === "Santa Claus") {               
       happ *= 1.12
     } else {           
@@ -42,7 +42,7 @@ function oneHappiness(name, biome, neighbours) {
   for (const n of neighbours) {
     if (npc["loves"].includes(n))    { happ *= 0.88 }
     if (npc["likes"].includes(n)
-		|| n === "Princess")         { happ *= 0.94 }
+        || n === "Princess")         { happ *= 0.94 }
     if (npc["dislikes"].includes(n)) { happ *= 1.06 }
     if (npc["hates"].includes(n))    { happ *= 1.12 }
   }
@@ -68,7 +68,7 @@ function sumOfWeights(group) {
 // input group of names of npcs
 // return array of the biome(s) which minimise happiness
 function bestBiomesForGroup(group) {
-  if (group.includes("Truffle")) { return ["Mushroom"] }
+  if (group.includes("Truffle")) { return [["Mushroom"]] }
   let lowestHappinessSoFar = Infinity
   let bestBiomesSoFar = []
   for (const biome of biomes) {

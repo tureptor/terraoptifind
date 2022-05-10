@@ -1,5 +1,5 @@
-const biomes = ["Forest", "Hallow","Caverns","Desert","Jungle","Ocean","Snow","Mushroom"]
-
+const baseBiomes = ["Forest", "Hallow","Caverns","Desert","Jungle","Ocean","Snow","Mushroom"]
+const biomes = [["Forest"], ["Hallow"], ["Caverns"], ["Desert"], ["Jungle"], ["Ocean"], ["Snow"], ["Mushroom"]]
 const npcdict = {
     "Guide": {
         "biome_liked": "Forest",
@@ -415,7 +415,7 @@ const npcdict = {
         ],
         "weighting": 1.0
     },
-	"Princess": {
+    "Princess": {
         "biome_liked": "",
         "biome_disliked": "",
         "loves": [],

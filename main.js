@@ -43,7 +43,7 @@ function updateNumPossibleGroups() {
 function genBiomeTable() {
   let tableHTML = "<table>"
   tableHTML += "<tr> <th>Biome</th> <th>Require at least one group of size >=2 in this biome?</th>"
-  for (const biome of biomes) {
+  for (const biome of baseBiomes) {
     tableHTML += "<tr>"
     tableHTML += "<td>" + biome + "</td>"
     tableHTML += "<td style=\"text-align:center\"> <input style=\"width:1.5em; height:1.5em\""
@@ -55,7 +55,7 @@ function genBiomeTable() {
 }
 
 function includePylonBiomes() {
-  for (const biome of biomes) {
+  for (const biome of baseBiomes) {
     document.getElementById(biome + "Checkbox").checked = true
   }
 }
@@ -83,14 +83,16 @@ function genNPCtable() {
 }
 
 function genResultsTable(groups) {
-  groups.sort((a,b) => biomes.indexOf(a[1]) -  biomes.indexOf(b[1]))
+  groups.sort((a,b) => {
+    return baseBiomes.indexOf(a[1][0])  -  baseBiomes.indexOf(b[1][0])
+  })
   let output = document.getElementById("resultTableDiv");
   let tableHTML = "<table>"
   tableHTML += "<tr> <th>Biome(s) for group</th>"
   tableHTML += "<th>NPCs in this group (and their pricing modifier for each biome)</th></tr>"
   for (const group of groups) {
     let biome = group[1]
-    tableHTML += "<tr><td>"+biome+"</td><td>"
+    tableHTML += "<tr><td>"+biome.toString()+"</td><td>"
     for (const person of group[0]) {
       tableHTML += person
       let neighbours = group[0].filter((name,index) => name !== person)
@@ -116,7 +118,7 @@ function startSearch() {
     }
   }
   let minBiomes = []
-  for (const biome of biomes) {
+  for (const biome of baseBiomes) {
     if (document.getElementById(biome + "Checkbox").checked) {
       minBiomes.push(biome)
     }

@@ -65,6 +65,7 @@ class Searcher {
     }
     for (let i=minIndex; i < this.#possibleGroups.length; i++) {
       let group = [this.#possibleGroups[i][0], this.#possibleGroups[i][3]]
+      let subBiomes = group[1]
       let groupAvgHappiness = this.#possibleGroups[i][1]
       let bestPossibleHappiness = prefixHappiness + sumOfWeights(remainingPeople) * groupAvgHappiness
       if ((bestPossibleHappiness).toFixed(2) > (this.#bestHappinessSoFar).toFixed(2)) {
@@ -78,7 +79,11 @@ class Searcher {
         let newPrefixHappiness = prefixHappiness + this.#possibleGroups[i][2] * groupAvgHappiness
         let newRemainingBiomes = []
         if (group[0].length > 1) {
-          newRemainingBiomes = remainingBiomes.filter(biome => biome !== group[1])
+          let applicableSubBiomes = subBiomes.filter(subBiome => remainingBiomes.includes(subBiome))
+          if (applicableSubBiomes.length === 1) {
+            let subBiome = applicableSubBiomes[0]
+            newRemainingBiomes = remainingBiomes.filter(biome => subBiome !== group[1])
+          }
         }
         else {
           newRemainingBiomes = remainingBiomes.slice()
