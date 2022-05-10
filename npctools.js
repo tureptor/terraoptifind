@@ -4,6 +4,14 @@ function oneHappiness(name, biome, neighbours) {
   let happ = 1.0
   let npc = npcdict[name]
   
+  
+  if (name === "Princess") {
+	  if (neighbours.length < 2) { return 1.5 * npc["weighting"] }
+	  happ *= Math.pow(0.88, Math.min(3, neighbours.length))
+	  return +(Math.max(happ, 0.75)).toFixed(2)
+  }
+  
+  
   // crowdedness
   if (neighbours.length > 3) {
     happ *= 1.05 ** (neighbours.length - 3)
@@ -33,13 +41,14 @@ function oneHappiness(name, biome, neighbours) {
   // neighbours
   for (const n of neighbours) {
     if (npc["loves"].includes(n))    { happ *= 0.88 }
-    if (npc["likes"].includes(n))    { happ *= 0.94 }
+    if (npc["likes"].includes(n)
+		|| n === "Princess")         { happ *= 0.94 }
     if (npc["dislikes"].includes(n)) { happ *= 1.06 }
     if (npc["hates"].includes(n))    { happ *= 1.12 }
   }
 
   // enforce upper/lower bound on happiness
-  happ = Math.min(4/3, happ)
+  happ = Math.min(1.5, happ)
   happ = Math.max(0.75, happ)
 
   // round to 2dp

@@ -414,5 +414,14 @@ const npcdict = {
             "Witch Doctor"
         ],
         "weighting": 1.0
+    },
+	"Princess": {
+        "biome_liked": "",
+        "biome_disliked": "",
+        "loves": [],
+        "likes": [],
+        "dislikes": [],
+        "hates": [],
+        "weighting": 1.0
     }
 }
