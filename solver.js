@@ -13,7 +13,6 @@ function * combinations(k, someArray, fromThisIndex=0) {
   }
 }
 
-
 // generates array of all combinations of people such that
 // minGroupSize <= combination.length <= maxGroupSize
 // each combination is paired with the average happiness, the total weight, and its biome
@@ -57,11 +56,19 @@ class Searcher {
     genResultsTable(newCombination)
   }
 
-  findCombination(prefix, remainingPeople, minIndex, prefixHappiness, remainingBiomes) {
+  findCombination(minIndex, prefixPeople, prefixBiomes, prefixHappiness, remainingPeople, remainingBiomes) {
     if (minIndex > this.#possibleGroups.length - 1) { return }
-    if (remainingPeople.length  < Math.max(this.minGroupSize, 2) * remainingBiomes.length) { return }
+    if (remainingPeople.length  < Math.max(this.minGroupSize, 2) * remainingBiomes.length) {
+		prefixBiomes = prefixBiomes.map(subBiomes => {
+			subBiomes.filter(subBiome => remainingBiomes.includes(subBiome))
+		})
+		prefixBiomes = prefixBiomes.filter(x => x.length > 0)
+		if (remainingPeople.length  < Math.max(this.minGroupSize, 2) * (remainingBiomes.length - prefixBiomes.length)) {
+			return
+		}
+	}
     if (remainingPeople.length === 0) {
-      this.handleNewCombination(prefix, prefixHappiness)
+      this.handleNewCombination(prefixPeople, prefixHappiness)
     }
     for (let i=minIndex; i < this.#possibleGroups.length; i++) {
       let group = [this.#possibleGroups[i][0], this.#possibleGroups[i][3]]
@@ -73,10 +80,11 @@ class Searcher {
         return
       }
       if (group[0].every(person => remainingPeople.includes(person))) {
-        let newPrefix = prefix.slice()
+        let newPrefix = prefixPeople.slice()
         newPrefix.push(group)
         let newRemainingPeople = remainingPeople.filter(person => !(group[0].includes(person)))
         let newPrefixHappiness = prefixHappiness + this.#possibleGroups[i][2] * groupAvgHappiness
+		let newPrefixBiomes = prefixBiomes.slice()
         let newRemainingBiomes = []
         if (group[0].length > 1) {
           let applicableSubBiomes = subBiomes.filter(subBiome => remainingBiomes.includes(subBiome))
@@ -84,11 +92,14 @@ class Searcher {
             let subBiome = applicableSubBiomes[0]
             newRemainingBiomes = remainingBiomes.filter(biome => subBiome !== group[1])
           }
+		  else if (applicableSubBiomes.length > 1) {
+			  newPrefixBiomes.push(applicableSubBiomes)
+		  }
         }
         else {
           newRemainingBiomes = remainingBiomes.slice()
         }
-        this.findCombination(newPrefix, newRemainingPeople, i+1, newPrefixHappiness, newRemainingBiomes)
+        this.findCombination(i+1, newPrefix, newPrefixBiomes, newPrefixHappiness, newRemainingPeople, newRemainingBiomes)
       }
     }
   }
@@ -100,7 +111,7 @@ class Searcher {
     document.getElementById("timeElapsedCache").innerHTML = (
       (performance.now() - this.#start) / 1000).toFixed(3)
     this.#start = performance.now()
-    this.findCombination([], this.people, 0, 0, this.minBiomes)
+    this.findCombination(0, [], [], 0, this.people, this.minBiomes)
     document.getElementById("timeElapsedSearch").innerHTML = (
       (performance.now() - this.#start) / 1000).toFixed(3)
     document.getElementById("branchesPruned").innerHTML = this.#branchesPruned

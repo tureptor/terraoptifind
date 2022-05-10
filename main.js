@@ -84,7 +84,9 @@ function genNPCtable() {
 
 function genResultsTable(groups) {
   groups.sort((a,b) => {
-    return baseBiomes.indexOf(a[1][0])  -  baseBiomes.indexOf(b[1][0])
+	let c = a[1].map(x => baseBiomes.indexOf(x)).toString()
+	let d = b[1].map(x => baseBiomes.indexOf(x)).toString()
+    return c > d ? 1 : d > c ? -1 : 0
   })
   let output = document.getElementById("resultTableDiv");
   let tableHTML = "<table>"
@@ -92,7 +94,7 @@ function genResultsTable(groups) {
   tableHTML += "<th>NPCs in this group (and their pricing modifier for each biome)</th></tr>"
   for (const group of groups) {
     let biome = group[1]
-    tableHTML += "<tr><td>"+biome.toString()+"</td><td>"
+    tableHTML += "<tr><td>"+biome.join("")+"</td><td>"
     for (const person of group[0]) {
       tableHTML += person
       let neighbours = group[0].filter((name,index) => name !== person)
