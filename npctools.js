@@ -68,6 +68,7 @@ function bestBiomesForGroup(group) {
       thisBiomeHappiness += oneHappiness(person, biome,
         group.filter((name,index) => name !== person))
     }
+    thisBiomeHappiness = +thisBiomeHappiness.toFixed(8)
     if (thisBiomeHappiness < lowestHappinessSoFar) {
       bestBiomesSoFar = [biome]
       lowestHappinessSoFar = thisBiomeHappiness
