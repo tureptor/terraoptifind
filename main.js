@@ -108,6 +108,25 @@ function genResultsTable(groups) {
   output.innerHTML = tableHTML + "</table><br>" + output.innerHTML
 }
   
+function handleWorkerMessage(phase, data) {
+  if (phase === "mid") {
+    document.getElementById("newBestSolutionsFound").innerHTML = data[0]
+    document.getElementById("timeElapsedSearch").innerHTML = data[1]
+    document.getElementById("branchesPruned").innerHTML = data[2]
+    
+  }
+  if (phase === "cache") {
+    document.getElementById("timeElapsedCache").innerHTML = data
+  }
+  
+  if (phase === "result") {
+    for (const solu of data) {
+      genResultsTable(solu)
+    }
+  }
+  
+}
+
 
 function startSearch() {
   let peopleWeCanUse = []
@@ -129,12 +148,14 @@ function startSearch() {
   let maxGroupSize = document.getElementById("maxGroupSize").value
 
   document.getElementById("resultTableDiv").innerHTML = ""
-  
-  const searcher = new Searcher(peopleWeCanUse, minGroupSize, maxGroupSize, minBiomes)
-  searcher.search()
+  const myWorker = new Worker("solver.js")
+  myWorker.postMessage([npcdict,[peopleWeCanUse, minGroupSize, maxGroupSize, minBiomes]])
+  myWorker.onmessage = function(e){handleWorkerMessage(...e["data"])}
   estimatedBrowserSpeed = (+document.getElementById("timeElapsedCache").value + +document.getElementById("timeElapsedSearch").value) / numOfPeopleInGroups
   updateNumPossibleGroups()
 }
+
+
 
 genBiomeTable()
 genNPCtable()
