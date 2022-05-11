@@ -61,11 +61,22 @@ class Searcher {
     this.#bestHappinessSoFar = newHappiness
   }
 
+  findCover(subBiomes, remainingBiomes) {
+    if (remainingBiomes.length == 0) { return true }
+    if (subBiomes.length == 0 ) { return false }
+    for (const biome of subBiomes[0]) {
+      if (this.findCover(subBiomes.slice(1), remainingBiomes.filter(s => s != biome))) {
+        return true
+      }
+    }
+    return false
+  }
+  
   findCombination(minIndex, prefixPeople, prefixBiomes, prefixHappiness, remainingPeople, remainingBiomes) {
     if (minIndex > this.#possibleGroups.length - 1) { return }
     if (remainingPeople.length  < Math.max(this.minGroupSize, 2) * remainingBiomes.length) {
       prefixBiomes = prefixBiomes.map(subBiomes => {
-        subBiomes.filter(subBiome => remainingBiomes.includes(subBiome))
+        return subBiomes.filter(subBiome => remainingBiomes.includes(subBiome))
       })
       prefixBiomes = prefixBiomes.filter(x => x.length > 0)
       if (remainingPeople.length  < Math.max(this.minGroupSize, 2) * (remainingBiomes.length - prefixBiomes.length)) {
@@ -73,7 +84,21 @@ class Searcher {
       }
     }
     if (remainingPeople.length === 0) {
-      this.handleNewCombination(prefixPeople, prefixHappiness)
+      if (remainingBiomes.length == 0) {
+        this.handleNewCombination(prefixPeople, prefixHappiness)
+      } else {
+        this.statusUpdate()
+        prefixBiomes = prefixBiomes.map(subBiomes => {
+          return subBiomes.filter(subBiome => remainingBiomes.includes(subBiome))
+        })
+        let remainderBiomes = []
+        for (const subBiomes of prefixBiomes) {
+          if (subBiomes.length == 1) {
+            remainingBiomes = remainingBiomes.filter( someBiome => someBiome != subBiomes[0] )
+          } else if (subBiomes.length > 1) {remainderBiomes.push(subBiomes)}
+        }
+        if (this.findCover(remainderBiomes, remainingBiomes)) {this.handleNewCombination(prefixPeople, prefixHappiness)}
+        }
     }
     let bestHappinessSoFarCopy = Infinity
     let neededAvgHappiness = Infinity
@@ -96,7 +121,7 @@ class Searcher {
         let newRemainingPeople = remainingPeople.filter(person => !(group[0].includes(person)))
         let newPrefixHappiness = prefixHappiness + this.#possibleGroups[i][2] * groupAvgHappiness
         let newPrefixBiomes = prefixBiomes.slice()
-        let newRemainingBiomes = []
+        let newRemainingBiomes = remainingBiomes.slice()
         if (group[0].length > 1) {
           let applicableSubBiomes = subBiomes.filter(subBiome => remainingBiomes.includes(subBiome))
           if (applicableSubBiomes.length === 1) {
@@ -106,9 +131,6 @@ class Searcher {
           else if (applicableSubBiomes.length > 1) {
             newPrefixBiomes.push(applicableSubBiomes)
           }
-        }
-        else {
-          newRemainingBiomes = remainingBiomes.slice()
         }
         this.findCombination(i+1, newPrefix, newPrefixBiomes, newPrefixHappiness, newRemainingPeople, newRemainingBiomes)
       }
