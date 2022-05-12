@@ -56,7 +56,7 @@ class Searcher {
 
   statusUpdate() {
     this.#branchesPruned +=1
-    if ((this.#branchesPruned & ((2 << 14) - 1)) === 0) { 
+    if ((this.#branchesPruned & ((2 << 11) - 1)) === 0) { 
     let timeElapsed = ((performance.now() - this.#start) / 1000).toFixed(3)
     postMessage(["mid", [this.#newBestSolutionsFound, timeElapsed,this.#branchesPruned]])}
     if (this.#foundEqualSolutions && this.#branchesPruned - (2 << 18) > this.#prevBranchesPruned){
@@ -158,6 +158,7 @@ class Searcher {
         for (const person of group[0]) { remainingPeople[person] = true }
       }
     }
+    return this.statusUpdate()
   }
 
   search() {

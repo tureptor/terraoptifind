@@ -126,13 +126,17 @@ function showAllResults(data) {
 function handleWorkerMessage(phase, data) {
   switch (phase) {
     case "mid":
-      document.getElementById("newBestSolutionsFound").innerHTML = data[0]
-      document.getElementById("timeElapsedSearch").innerHTML = data[1]
-      document.getElementById("branchesPruned").innerHTML = data[2]
+      requestAnimationFrame( () => {
+        document.getElementById("newBestSolutionsFound").innerHTML = data[0]
+        document.getElementById("timeElapsedSearch").innerHTML = data[1]
+        document.getElementById("branchesPruned").innerHTML = data[2]
+      })
       break
     
     case "cache":
-      document.getElementById("timeElapsedCache").innerHTML = data
+      requestAnimationFrame( () => {
+        document.getElementById("timeElapsedCache").innerHTML = data
+      })
       break
   
     case "result":
@@ -140,7 +144,9 @@ function handleWorkerMessage(phase, data) {
       break
 
     case "done":
-      document.getElementById("timeElapsedSearch").innerHTML += " FINISHED"
+      requestAnimationFrame( () => {
+        document.getElementById("timeElapsedSearch").innerHTML += " FINISHED"
+      })
       break
      
      default:
