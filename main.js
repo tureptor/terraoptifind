@@ -127,8 +127,9 @@ function handleWorkerMessage(phase, data) {
   
 }
 
-
+let myWorker = new Worker("solver.js")
 function startSearch() {
+  myWorker.terminate()
   let peopleWeCanUse = []
   for (const person of people) {
     if (document.getElementById(person + "Checkbox").checked) {
@@ -148,11 +149,12 @@ function startSearch() {
   let maxGroupSize = document.getElementById("maxGroupSize").value
 
   document.getElementById("resultTableDiv").innerHTML = ""
-  const myWorker = new Worker("solver.js")
+  myWorker = new Worker("solver.js")
   myWorker.postMessage([npcdict,[peopleWeCanUse, minGroupSize, maxGroupSize, minBiomes]])
   myWorker.onmessage = function(e){handleWorkerMessage(...e["data"])}
   estimatedBrowserSpeed = (+document.getElementById("timeElapsedCache").value + +document.getElementById("timeElapsedSearch").value) / numOfPeopleInGroups
   updateNumPossibleGroups()
+  
 }
 
 
