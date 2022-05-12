@@ -1,8 +1,5 @@
 const people = Object.keys(npcdict)
 
-var estimatedBrowserSpeed = 0.00001
-var numOfPeopleinGroups = 58125
-
 function updateNumPossibleGroups() {
   // count number of npcs we can use
   let n = 0
@@ -37,7 +34,6 @@ function updateNumPossibleGroups() {
     numOfPeopleInGroups += pascals[n][k] * k
   }
   document.getElementById("numPossibleGroups").value = numOfGroups
-  document.getElementById("estimatedComputationTime").value = (numOfPeopleInGroups * estimatedBrowserSpeed).toFixed(1)
 }
 
 function genBiomeTable() {
@@ -154,6 +150,12 @@ function handleWorkerMessage(phase, data) {
 let myWorker = new Worker("solver.js")
 function startSearch() {
   myWorker.terminate()
+  document.getElementById("timeElapsedCache").innerHTML = "0.000"
+  document.getElementById("newBestSolutionsFound").innerHTML = "0"
+  document.getElementById("timeElapsedSearch").innerHTML = "0.000"
+  document.getElementById("branchesPruned").innerHTML = "0"
+  document.getElementById("resultTableDiv").innerHTML = ""
+  
   let peopleWeCanUse = []
   for (const person of people) {
     if (document.getElementById(person + "Checkbox").checked) {
@@ -172,13 +174,10 @@ function startSearch() {
   let minGroupSize = document.getElementById("minGroupSize").value
   let maxGroupSize = document.getElementById("maxGroupSize").value
 
-  
+
   myWorker = new Worker("solver.js")
   myWorker.postMessage([npcdict,[peopleWeCanUse, minGroupSize, maxGroupSize, minBiomes]])
   myWorker.onmessage = function(e){handleWorkerMessage(...e["data"])}
-  estimatedBrowserSpeed = (+document.getElementById("timeElapsedCache").value + +document.getElementById("timeElapsedSearch").value) / numOfPeopleInGroups
-  updateNumPossibleGroups()
-  
 }
 
 
