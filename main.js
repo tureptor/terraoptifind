@@ -115,6 +115,7 @@ function handleWorkerMessage(phase, data) {
   }
   
   if (phase === "result") {
+    document.getElementById("resultTableDiv").innerHTML = ""
     // sort each solution's groups by biomes + names 
     for (var solu of data) {
       solu = solu.sort((a,b) => {
@@ -161,7 +162,7 @@ function startSearch() {
   let minGroupSize = document.getElementById("minGroupSize").value
   let maxGroupSize = document.getElementById("maxGroupSize").value
 
-  document.getElementById("resultTableDiv").innerHTML = ""
+  
   myWorker = new Worker("solver.js")
   myWorker.postMessage([npcdict,[peopleWeCanUse, minGroupSize, maxGroupSize, minBiomes]])
   myWorker.onmessage = function(e){handleWorkerMessage(...e["data"])}

@@ -61,10 +61,14 @@ class Searcher {
 
   handleNewCombination(newCombination, newHappiness) {
     this.statusUpdate()
-    if (this.#bestHappinessSoFar.toFixed(3) > newHappiness.toFixed(3)) { this.#bestCombinationsSoFar = [] }
-    this.#newBestSolutionsFound += 1
+    if (this.#bestHappinessSoFar.toFixed(3) > newHappiness.toFixed(3)) {
+      this.#bestCombinationsSoFar = []
+      this.#newBestSolutionsFound += 1
+    }
+    
     this.#bestCombinationsSoFar.push(newCombination)
     this.#bestHappinessSoFar = newHappiness
+    postMessage(["result", this.#bestCombinationsSoFar])
   }
 
   maxBiomesCovered(subBiomes, remainingBiomes) {
@@ -165,6 +169,5 @@ class Searcher {
 onmessage = function(e) {
   npcdict = e["data"][0]
   const searcher = new Searcher(...e["data"][1])
-  result = searcher.search()
-  postMessage(["result", result])
+  searcher.search()
 }
