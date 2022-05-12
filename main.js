@@ -156,11 +156,13 @@ function handleWorkerMessage(phase, data) {
 let myWorker = new Worker("solver.js")
 function startSearch() {
   myWorker.terminate()
-  document.getElementById("timeElapsedCache").innerHTML = "0.000"
-  document.getElementById("newBestSolutionsFound").innerHTML = "0"
-  document.getElementById("timeElapsedSearch").innerHTML = "0.000"
-  document.getElementById("branchesPruned").innerHTML = "0"
-  document.getElementById("resultTableDiv").innerHTML = ""
+    requestAnimationFrame( () => {
+    document.getElementById("timeElapsedCache").innerHTML = "0.000"
+    document.getElementById("newBestSolutionsFound").innerHTML = "0"
+    document.getElementById("timeElapsedSearch").innerHTML = "0.000"
+    document.getElementById("branchesPruned").innerHTML = "0"
+    document.getElementById("resultTableDiv").innerHTML = ""
+  })
   
   let peopleWeCanUse = []
   for (const person of people) {
