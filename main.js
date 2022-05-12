@@ -83,11 +83,6 @@ function genNPCtable() {
 }
 
 function genResultsTable(groups) {
-  groups.sort((a,b) => {
-	let c = a[1].map(x => baseBiomes.indexOf(x)).toString()
-	let d = b[1].map(x => baseBiomes.indexOf(x)).toString()
-    return c > d ? 1 : d > c ? -1 : 0
-  })
   let output = document.getElementById("resultTableDiv");
   let tableHTML = "<table>"
   tableHTML += "<tr> <th>Biome(s) for group</th>"
@@ -120,8 +115,26 @@ function handleWorkerMessage(phase, data) {
   }
   
   if (phase === "result") {
-    for (const solu of data) {
+    // sort each solution's groups by biomes + names 
+    for (var solu of data) {
+      solu = solu.sort((a,b) => {
+      let c = a[1].map(x => baseBiomes.indexOf(x)).toString() + JSON.stringify(a[0])
+      let d = b[1].map(x => baseBiomes.indexOf(x)).toString() + JSON.stringify(b[0])
+        return c > d ? 1 : d > c ? -1 : 0
+      })
+    }
+    // sort all solutions
+    let sortedData = data.sort((a,b) => {
+      let c = JSON.stringify(a); let d = JSON.stringify(b)
+        return c > d ? 1 : d > c ? -1 : 0
+    })
+    let prevsolu = []
+    // only show solution if different from previous
+    for (const solu of sortedData) {
+      if (JSON.stringify(prevsolu) !== JSON.stringify(solu)) {
       genResultsTable(solu)
+      }
+      prevsolu = solu
     }
   }
   
