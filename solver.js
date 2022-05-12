@@ -1,5 +1,8 @@
 self.importScripts("npcdata.js","npctools.js")
 
+let covers = {}
+let timeSpen = 0
+
 // used to generate all possible npc groups/combinations
 // same as itertools.combinations from python
 function * combinations(k, someArray, fromThisIndex=0) {
@@ -62,28 +65,30 @@ class Searcher {
   }
 
   findCover(subBiomes, remainingBiomes) {
-    if (remainingBiomes.length == 0) { return true }
-    if (subBiomes.length == 0 ) { return false }
+        if (remainingBiomes.length == 0) {return true }
+    if (subBiomes.length == 0 ) {return false }
+    let key = subBiomes.join("|")+" "+remainingBiomes.toString()
+    if (key in covers) { return covers[key] }
     for (const biome of subBiomes[0]) {
       if (this.findCover(subBiomes.slice(1), remainingBiomes.filter(s => s != biome))) {
-        return true
+        covers[key] = true ;return true
       }
     }
-    return false
+    covers[key] = false ;return false
   }
   
-  findCombination(minIndex, prefixPeople, prefixBiomes, prefixHappiness, remainingPeople, remainingBiomes) {
+  findCombination(minIndex, prefixPeople, prefixBiomes, prefixHappiness, remainingPeople, remainingBiomes, remainingPeopleCount) {
     if (minIndex > this.#possibleGroups.length - 1) { return }
-    if (remainingPeople.length  < Math.max(this.minGroupSize, 2) * remainingBiomes.length) {
-      prefixBiomes = prefixBiomes.map(subBiomes => {
-        return subBiomes.filter(subBiome => remainingBiomes.includes(subBiome))
-      })
+    if (remainingPeopleCount  < Math.max(this.minGroupSize, 2) * remainingBiomes.length) {
+      prefixBiomes = prefixBiomes.map(subBiomes =>
+        subBiomes.filter(subBiome => remainingBiomes.includes(subBiome))
+      )
       prefixBiomes = prefixBiomes.filter(x => x.length > 0)
-      if (remainingPeople.length  < Math.max(this.minGroupSize, 2) * (remainingBiomes.length - prefixBiomes.length)) {
+      if (remainingPeopleCount  < Math.max(this.minGroupSize, 2) * (remainingBiomes.length - prefixBiomes.length)) {
         return
       }
     }
-    if (remainingPeople.length === 0) {
+    if (remainingPeopleCount === 0) {
       if (remainingBiomes.length == 0) {
         this.handleNewCombination(prefixPeople, prefixHappiness)
       } else {
@@ -105,7 +110,7 @@ class Searcher {
     for (let i=minIndex; i < this.#possibleGroups.length; i++) {
       if (bestHappinessSoFarCopy > this.#bestHappinessSoFar) {
         bestHappinessSoFarCopy = this.#bestHappinessSoFar
-        neededAvgHappiness = (this.#bestHappinessSoFar - prefixHappiness) / sumOfWeights(remainingPeople)
+        neededAvgHappiness = (this.#bestHappinessSoFar - prefixHappiness) / sumOfWeights(Object.keys(remainingPeople).filter(k => remainingPeople[k]))
       }
       let groupAvgHappiness = this.#possibleGroups[i][1]
       if (groupAvgHappiness > neededAvgHappiness) {
@@ -115,10 +120,10 @@ class Searcher {
       }
       let group = [this.#possibleGroups[i][0], this.#possibleGroups[i][3]]
       let subBiomes = group[1]
-      if (group[0].every(person => remainingPeople.includes(person))) {
+      if (group[0].every(person => remainingPeople[person])) {
         let newPrefix = prefixPeople.slice()
         newPrefix.push(group)
-        let newRemainingPeople = remainingPeople.filter(person => !(group[0].includes(person)))
+        for (const person of group[0]) { remainingPeople[person] = false }
         let newPrefixHappiness = prefixHappiness + this.#possibleGroups[i][2] * groupAvgHappiness
         let newPrefixBiomes = prefixBiomes.slice()
         let newRemainingBiomes = remainingBiomes.slice()
@@ -132,7 +137,8 @@ class Searcher {
             newPrefixBiomes.push(applicableSubBiomes)
           }
         }
-        this.findCombination(i+1, newPrefix, newPrefixBiomes, newPrefixHappiness, newRemainingPeople, newRemainingBiomes)
+        this.findCombination(i+1, newPrefix, newPrefixBiomes, newPrefixHappiness, remainingPeople, newRemainingBiomes, remainingPeopleCount - group[0].length)
+        for (const person of group[0]) { remainingPeople[person] = true }
       }
     }
   }
@@ -142,7 +148,7 @@ class Searcher {
     this.#possibleGroups = generateArrayOfGroups(this.minGroupSize, this.maxGroupSize, this.people)
     postMessage(["cache", ((performance.now() - cacheStart) / 1000).toFixed(3)])
     this.#start = performance.now()
-    this.findCombination(0, [], [], 0, this.people, this.minBiomes)
+    this.findCombination(0, [], [], 0, Object.assign({}, ...this.people.map(num => ({[num]: true}))), this.minBiomes, this.people.length)
     this.statusUpdate()
     return this.#bestCombinationsSoFar
   }
