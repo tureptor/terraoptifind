@@ -100,45 +100,55 @@ function genResultsTable(groups) {
     tableHTML = tableHTML.slice(0, -2) + "</td></tr>"
   }
 
-  output.innerHTML = tableHTML + "</table><br>" + output.innerHTML
+  output.innerHTML += tableHTML + "</table><br>"
 }
-  
-function handleWorkerMessage(phase, data) {
-  if (phase === "mid") {
-    document.getElementById("newBestSolutionsFound").innerHTML = data[0]
-    document.getElementById("timeElapsedSearch").innerHTML = data[1]
-    document.getElementById("branchesPruned").innerHTML = data[2]
-    
-  }
-  if (phase === "cache") {
-    document.getElementById("timeElapsedCache").innerHTML = data
-  }
-  
-  if (phase === "result") {
-    document.getElementById("resultTableDiv").innerHTML = ""
-    // sort each solution's groups by biomes + names 
-    for (var solu of data) {
-      solu = solu.sort((a,b) => {
-      let c = a[1].map(x => baseBiomes.indexOf(x)).toString() + JSON.stringify(a[0])
-      let d = b[1].map(x => baseBiomes.indexOf(x)).toString() + JSON.stringify(b[0])
-        return c > d ? 1 : d > c ? -1 : 0
-      })
-    }
-    // sort all solutions
-    let sortedData = data.sort((a,b) => {
-      let c = JSON.stringify(a); let d = JSON.stringify(b)
-        return c > d ? 1 : d > c ? -1 : 0
+
+function showAllResults(data) {
+  document.getElementById("resultTableDiv").innerHTML = ""
+  // sort each solution's groups by biomes + names 
+  for (var solu of data) {
+    solu = solu.sort((a,b) => {
+    let c = a[1].map(x => baseBiomes.indexOf(x)).toString() + JSON.stringify(a[0])
+    let d = b[1].map(x => baseBiomes.indexOf(x)).toString() + JSON.stringify(b[0])
+      return c > d ? 1 : d > c ? -1 : 0
     })
-    let prevsolu = []
-    // only show solution if different from previous
-    for (const solu of sortedData) {
-      if (JSON.stringify(prevsolu) !== JSON.stringify(solu)) {
-      genResultsTable(solu)
-      }
-      prevsolu = solu
-    }
   }
+  // sort all solutions
+  let sortedData = data.sort((a,b) => {
+    let c = JSON.stringify(a); let d = JSON.stringify(b)
+      return c > d ? 1 : d > c ? -1 : 0
+  })
+  let prevsolu = []
+  // only show solution if different from previous
+  for (const solu of sortedData) {
+    if (JSON.stringify(prevsolu) !== JSON.stringify(solu)) {
+    genResultsTable(solu)
+    }
+    prevsolu = solu
+  }
+}
+function handleWorkerMessage(phase, data) {
+  switch (phase) {
+    case "mid":
+      document.getElementById("newBestSolutionsFound").innerHTML = data[0]
+      document.getElementById("timeElapsedSearch").innerHTML = data[1]
+      document.getElementById("branchesPruned").innerHTML = data[2]
+      break
+    
+    case "cache":
+      document.getElementById("timeElapsedCache").innerHTML = data
+      break
   
+    case "result":
+      requestAnimationFrame(() => showAllResults(data))
+      break
+
+    case "done":
+      document.getElementById("timeElapsedSearch").innerHTML += " FINISHED"
+      break
+     
+     default:
+  }     
 }
 
 let myWorker = new Worker("solver.js")

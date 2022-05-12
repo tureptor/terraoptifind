@@ -42,8 +42,10 @@ class Searcher {
   #bestHappinessSoFar = Infinity
   #possibleGroups = []
   #minGroups = []
+  #prevBranchesPruned = 0
   #branchesPruned = 0
   #newBestSolutionsFound = 0
+  #foundEqualSolutions = true
   #start = 0
   constructor(people, minGroupSize, maxGroupSize, minBiomes) {
     this.minGroupSize = minGroupSize
@@ -54,9 +56,14 @@ class Searcher {
 
   statusUpdate() {
     this.#branchesPruned +=1
-    if ((this.#branchesPruned & (Math.pow(2,14) - 1)) === 0) { 
+    if ((this.#branchesPruned & ((2 << 14) - 1)) === 0) { 
     let timeElapsed = ((performance.now() - this.#start) / 1000).toFixed(3)
     postMessage(["mid", [this.#newBestSolutionsFound, timeElapsed,this.#branchesPruned]])}
+    if (this.#foundEqualSolutions && this.#branchesPruned - (2 << 18) > this.#prevBranchesPruned){
+      this.#prevBranchesPruned = this.#branchesPruned
+      this.#foundEqualSolutions = false
+      postMessage(["result", this.#bestCombinationsSoFar])
+    }
   }
 
   handleNewCombination(newCombination, newHappiness) {
@@ -64,11 +71,12 @@ class Searcher {
     if (this.#bestHappinessSoFar.toFixed(3) > newHappiness.toFixed(3)) {
       this.#bestCombinationsSoFar = []
       this.#newBestSolutionsFound += 1
+      postMessage(["result", [newCombination]])
     }
-    
     this.#bestCombinationsSoFar.push(newCombination)
     this.#bestHappinessSoFar = newHappiness
-    postMessage(["result", this.#bestCombinationsSoFar])
+    
+    
   }
 
   maxBiomesCovered(subBiomes, remainingBiomes) {
@@ -103,7 +111,7 @@ class Searcher {
         }
     }
     let possibleGroups = this.#possibleGroups
-        if (minIndex > possibleGroups.length - 1) { return }
+    if (minIndex > possibleGroups.length - 1) { return this.statusUpdate() }
 
     if (this.minGroupSize > remainingPeopleCount) { return this.statusUpdate() }
     if (this.minGroupSize == remainingPeopleCount) { possibleGroups = this.#minGroups; minIndex = 0 }
@@ -113,7 +121,7 @@ class Searcher {
       )
       prefixBiomes = prefixBiomes.filter(x => x.length > 0)
       if (remainingPeopleCount  < Math.max(this.minGroupSize, 2) * (remainingBiomes.length - this.maxBiomesCovered(prefixBiomes, remainingBiomes))) {
-        return
+        return this.statusUpdate()
       }
     }
     let bestHappinessSoFarCopy = Infinity
@@ -159,7 +167,10 @@ class Searcher {
     postMessage(["cache", ((performance.now() - cacheStart) / 1000).toFixed(3)])
     this.#start = performance.now()
     this.findCombination(0, [], [], 0, Object.assign({}, ...this.people.map(num => ({[num]: true}))), this.minBiomes, this.people.length)
-    this.statusUpdate()
+    let timeElapsed = ((performance.now() - this.#start) / 1000).toFixed(3)
+    postMessage(["mid", [this.#newBestSolutionsFound, timeElapsed,this.#branchesPruned]])
+    postMessage(["done", 0])
+    postMessage(["result", this.#bestCombinationsSoFar])
     return this.#bestCombinationsSoFar
   }
 
