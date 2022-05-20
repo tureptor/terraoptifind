@@ -93,7 +93,7 @@ function genResultsTable(groups) {
     biome = group[1]
     biome = biome.filter((b,i) => {
       let copyWithoutB = biome.slice(); copyWithoutB.splice(i,1)
-      return b.every(x => !copyWithoutB.some(y=> JSON.stringify([x]) === JSON.stringify(y)))
+      return copyWithoutB.every(y => y.some(x => !b.includes(x)))
     }) // basically if [[hallow],[hallow,desert]] then reduce this to just [[hallow]]
     tableHTML += "<tr><td>"+biome.map(x=>x.join("")).join(" | ")+"</td><td>"
     for (const person of group[0]) {
