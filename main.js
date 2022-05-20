@@ -79,6 +79,7 @@ function genNPCtable() {
 }
 
 function genResultsTable(groups) {
+  groups = groups.map(group => [group[0],[...group[1]].map(x=>JSON.parse(x))])
   groups.sort((a,b) => {
     let c = a[1].map(y => y.map(x => baseBiomes.indexOf(x)).toString()).join("")
     let d = b[1].map(y => y.map(x => baseBiomes.indexOf(x)).toString()).join("")
@@ -89,7 +90,7 @@ function genResultsTable(groups) {
   tableHTML += "<tr> <th>Biome(s) for group</th>"
   tableHTML += "<th>NPCs in this group (and their pricing modifier for each biome)</th></tr>"
   for (const group of groups) {
-    let biome = [...new Set(group[1].map(x=>JSON.stringify(x)))].map(x=>JSON.parse(x))
+    biome = group[1]
     biome = biome.filter((b,i) => {
       let copyWithoutB = biome.slice(); copyWithoutB.splice(i,1)
       return b.every(x => !copyWithoutB.some(y=> JSON.stringify([x]) === JSON.stringify(y)))
@@ -126,14 +127,14 @@ function showAllResults(data) {
       return c > d ? 1 : d > c ? -1 : 0
   })
   let prevsolu = sortedData[0]
-  let mergedsolu = JSON.parse(JSON.stringify(prevsolu)).map(elem => [elem[0], [elem[1]]])
+  let mergedsolu = JSON.parse(JSON.stringify(prevsolu)).map(elem => [elem[0], new Set([JSON.stringify(elem[1])])])
   // only show solution if different from previous
   for (let i=1; i<sortedData.length; i++) {
     let solu = sortedData[i]
     if (JSON.stringify(prevsolu) !== JSON.stringify(solu)) {
       if (prevsolu.every((elem,i) => JSON.stringify(elem[0]) === JSON.stringify(solu[i][0]))) {
         for (let j=0; j< mergedsolu.length; j++) {
-          mergedsolu[j][1].push(solu[j][1])
+          mergedsolu[j][1].add(JSON.stringify(solu[j][1]))
         }
       } else {
         genResultsTable(mergedsolu)
@@ -143,7 +144,7 @@ function showAllResults(data) {
         output.innerHTML += "<br>Below has:<br>"
         output.innerHTML += solu.filter(x => !prevsolu.map(y => JSON.stringify(y[0])).includes(JSON.stringify(x[0])))
                                   .map(x => x[0].join(", ")).join("<br>")+"<br>"
-        mergedsolu = JSON.parse(JSON.stringify(solu)).map(elem => [elem[0], [elem[1]]])
+        mergedsolu = JSON.parse(JSON.stringify(solu)).map(elem => [elem[0], new Set([JSON.stringify(elem[1])])])
       }
     }
     prevsolu = solu
