@@ -1,5 +1,5 @@
 self.importScripts("npcdata.js","npctools.js")
-
+let biomes = []
 let covers = {}
 let timeSpen = 0
 
@@ -107,8 +107,10 @@ class Searcher {
             remainingBiomes = remainingBiomes.filter( someBiome => someBiome != subBiomes[0] )
           } else if (subBiomes.length > 1) {remainderBiomes.push(subBiomes)}
         }
-        if (this.maxBiomesCovered(remainderBiomes, remainingBiomes) == 0) {this.handleNewCombination(prefixPeople, prefixHappiness)}
+        if (this.maxBiomesCovered(remainderBiomes, remainingBiomes) == 0) {
+          this.handleNewCombination(prefixPeople, prefixHappiness)
         }
+      }
     }
     let possibleGroups = this.#possibleGroups
     if (minIndex > possibleGroups.length - 1) { return this.statusUpdate() }
@@ -116,11 +118,7 @@ class Searcher {
     if (this.minGroupSize > remainingPeopleCount) { return this.statusUpdate() }
     if (this.minGroupSize == remainingPeopleCount) { possibleGroups = this.#minGroups; minIndex = 0 }
     if (remainingPeopleCount  < Math.max(this.minGroupSize, 2) * remainingBiomes.length) {
-      prefixBiomes = prefixBiomes.map(subBiomes =>
-        subBiomes.filter(subBiome => remainingBiomes.includes(subBiome))
-      )
-      prefixBiomes = prefixBiomes.filter(x => x.length > 0)
-      if (remainingPeopleCount  < Math.max(this.minGroupSize, 2) * (remainingBiomes.length - this.maxBiomesCovered(prefixBiomes, remainingBiomes))) {
+      if (remainingPeopleCount  < Math.max(this.minGroupSize, 2) * (remainingBiomes.length - prefixBiomes.length)) {
         return this.statusUpdate()
       }
     }
@@ -170,8 +168,8 @@ class Searcher {
     this.findCombination(0, [], [], 0, Object.assign({}, ...this.people.map(num => ({[num]: true}))), this.minBiomes, this.people.length)
     let timeElapsed = ((performance.now() - this.#start) / 1000).toFixed(3)
     postMessage(["mid", [this.#newBestSolutionsFound, timeElapsed,this.#branchesPruned]])
-    postMessage(["done", 0])
     postMessage(["result", this.#bestCombinationsSoFar])
+    postMessage(["done", 0])
     return this.#bestCombinationsSoFar
   }
 
@@ -179,7 +177,8 @@ class Searcher {
 
 
 onmessage = function(e) {
-  npcdict = e["data"][0]
+  npcdict = e["data"][0][0]
+  biomes = e["data"][0][1]
   const searcher = new Searcher(...e["data"][1])
   searcher.search()
 }

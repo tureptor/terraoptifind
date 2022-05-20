@@ -38,7 +38,7 @@ function updateNumPossibleGroups() {
 
 function genBiomeTable() {
   let tableHTML = "<table>"
-  tableHTML += "<tr> <th>Biome</th> <th>Require at least one group of size >=2 in this biome?</th>"
+  tableHTML += "<tr> <th>Biome</th> <th>Require pylon here?</th>"
   for (const biome of baseBiomes) {
     tableHTML += "<tr>"
     tableHTML += "<td>" + biome + "</td>"
@@ -79,18 +79,27 @@ function genNPCtable() {
 }
 
 function genResultsTable(groups) {
+  groups.sort((a,b) => {
+    let c = a[1].map(y => y.map(x => baseBiomes.indexOf(x)).toString()).join("")
+    let d = b[1].map(y => y.map(x => baseBiomes.indexOf(x)).toString()).join("")
+      return c > d ? 1 : d > c ? -1 : 0
+    })
   let output = document.getElementById("resultTableDiv");
   let tableHTML = "<table>"
   tableHTML += "<tr> <th>Biome(s) for group</th>"
   tableHTML += "<th>NPCs in this group (and their pricing modifier for each biome)</th></tr>"
   for (const group of groups) {
-    let biome = group[1]
-    tableHTML += "<tr><td>"+biome.join("")+"</td><td>"
+    let biome = [...new Set(group[1].map(x=>JSON.stringify(x)))].map(x=>JSON.parse(x))
+    biome = biome.filter((b,i) => {
+      let copyWithoutB = biome.slice(); copyWithoutB.splice(i,1)
+      return b.every(x => !copyWithoutB.some(y=> JSON.stringify([x]) === JSON.stringify(y)))
+    }) // basically if [[hallow],[hallow,desert]] then reduce this to just [[hallow]]
+    tableHTML += "<tr><td>"+biome.map(x=>x.join("")).join(" | ")+"</td><td>"
     for (const person of group[0]) {
       tableHTML += person
       let neighbours = group[0].filter((name,index) => name !== person)
-      let personHappiness = (oneHappiness(person,biome,neighbours)/npcdict[person]["weighting"]).toFixed(2)
-      tableHTML += "(" + personHappiness + "), "
+      let personHappiness = biome.map(b => (oneHappiness(person,b,neighbours)/npcdict[person]["weighting"]).toFixed(2))
+      tableHTML += "(" + personHappiness.join(",") + "), "
     }
     // remove extra comma and space before ending row
     tableHTML = tableHTML.slice(0, -2) + "</td></tr>"
@@ -100,28 +109,46 @@ function genResultsTable(groups) {
 }
 
 function showAllResults(data) {
-  document.getElementById("resultTableDiv").innerHTML = ""
-  // sort each solution's groups by biomes + names 
+  let output = document.getElementById("resultTableDiv");
+  output.innerHTML = ""
+
+  // sort groups within each solution
   for (var solu of data) {
     solu = solu.sort((a,b) => {
-    let c = a[1].map(x => baseBiomes.indexOf(x)).toString() + JSON.stringify(a[0])
-    let d = b[1].map(x => baseBiomes.indexOf(x)).toString() + JSON.stringify(b[0])
+    let c = JSON.stringify(a[0])
+    let d = JSON.stringify(b[0])
       return c > d ? 1 : d > c ? -1 : 0
     })
   }
   // sort all solutions
   let sortedData = data.sort((a,b) => {
-    let c = JSON.stringify(a); let d = JSON.stringify(b)
+    let c = JSON.stringify(a.map(group=>group[0])); let d = JSON.stringify(b.map(group=>group[0]))
       return c > d ? 1 : d > c ? -1 : 0
   })
-  let prevsolu = []
+  let prevsolu = sortedData[0]
+  let mergedsolu = JSON.parse(JSON.stringify(prevsolu)).map(elem => [elem[0], [elem[1]]])
   // only show solution if different from previous
-  for (const solu of sortedData) {
+  for (let i=1; i<sortedData.length; i++) {
+    let solu = sortedData[i]
     if (JSON.stringify(prevsolu) !== JSON.stringify(solu)) {
-    genResultsTable(solu)
+      if (prevsolu.every((elem,i) => JSON.stringify(elem[0]) === JSON.stringify(solu[i][0]))) {
+        for (let j=0; j< mergedsolu.length; j++) {
+          mergedsolu[j][1].push(solu[j][1])
+        }
+      } else {
+        genResultsTable(mergedsolu)
+        output.innerHTML += "Above has:<br>"
+        output.innerHTML += prevsolu.filter(x => !solu.map(y => JSON.stringify(y[0])).includes(JSON.stringify(x[0])))
+                                  .map(x => x[0].join(", ")).join("<br>")+"<br>"
+        output.innerHTML += "<br>Below has:<br>"
+        output.innerHTML += solu.filter(x => !prevsolu.map(y => JSON.stringify(y[0])).includes(JSON.stringify(x[0])))
+                                  .map(x => x[0].join(", ")).join("<br>")+"<br>"
+        mergedsolu = JSON.parse(JSON.stringify(solu)).map(elem => [elem[0], [elem[1]]])
+      }
     }
     prevsolu = solu
   }
+  genResultsTable(mergedsolu)
 }
 function handleWorkerMessage(phase, data) {
   switch (phase) {
@@ -182,9 +209,18 @@ function startSearch() {
   let minGroupSize = document.getElementById("minGroupSize").value
   let maxGroupSize = document.getElementById("maxGroupSize").value
 
-
+  let biomes = biomes1
+  if (document.getElementById("useBiomes2Natural").checked) {
+    biomes = biomes.concat(biomes2Natural)
+  }
+  if (document.getElementById("useBiomes2Easy").checked) {
+    biomes = biomes.concat(biomes2Easy)
+  }
+  if (document.getElementById("useBiomes2Rest").checked) {
+    biomes = biomes.concat(biomes2Rest)
+  }
   myWorker = new Worker("solver.js")
-  myWorker.postMessage([npcdict,[peopleWeCanUse, minGroupSize, maxGroupSize, minBiomes]])
+  myWorker.postMessage([[npcdict,biomes],[peopleWeCanUse, minGroupSize, maxGroupSize, minBiomes]])
   myWorker.onmessage = function(e){handleWorkerMessage(...e["data"])}
 }
 

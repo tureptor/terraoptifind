@@ -1,5 +1,14 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/spcss@0.8.0">
 
+<style>
+
+input[type="checkbox"]{
+  width: 1.5em;
+  height: 1.5em;
+}
+</style>
+
+
 <div>
   <label for="minGroupSize">Min num of NPCs per group:</label>
   <input type="number" id="minGroupSize" min="1" max="25" value="1" onchange="updateNumPossibleGroups()">
@@ -19,7 +28,19 @@
 </div>
 
 <button style="width:15em; height:4em" onclick="includePylonBiomes()">Select pylon biomes</button>
-<p>Warning: Selecting certain biomes may increase computation time unpredictably.</p>
+
+<br>
+<label>Use naturally occuring hybrid biomes</label>
+<input type="checkbox" id="useBiomes2Natural">
+<br>
+
+<label>Use (easily) creatable hybrid biomes</label>
+<input type="checkbox" id="useBiomes2Easy">
+<br>
+
+<label>Use the other feasible hybrid biomes</label>
+<input type="checkbox" id="useBiomes2Rest">
+<br>
 
 <div style="overflow:scroll; height:15em">
   <div id="npcTableDiv"></div>
