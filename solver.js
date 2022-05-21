@@ -68,7 +68,7 @@ class Searcher {
 
   handleNewCombination(newCombination, newHappiness) {
     this.statusUpdate()
-    if (this.#bestHappinessSoFar.toFixed(3) > newHappiness.toFixed(3)) {
+    if (+(this.#bestHappinessSoFar).toFixed(3) > +(newHappiness).toFixed(3)) {
       this.#bestCombinationsSoFar = []
       this.#newBestSolutionsFound += 1
       postMessage(["result", [newCombination]])
@@ -130,7 +130,8 @@ class Searcher {
         neededAvgHappiness = (this.#bestHappinessSoFar - prefixHappiness) / sumOfWeights(Object.keys(remainingPeople).filter(k => remainingPeople[k]))
       }
       let groupAvgHappiness = possibleGroups[i][1]
-      if (groupAvgHappiness > neededAvgHappiness) {
+      if (groupAvgHappiness > neededAvgHappiness 
+        && +(groupAvgHappiness).toFixed(10) > +(neededAvgHappiness).toFixed(10)) {
         return this.statusUpdate()
       }
       let group = [possibleGroups[i][0], possibleGroups[i][3]]

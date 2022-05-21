@@ -108,7 +108,6 @@ function genResultsTable(groups) {
 
   output.innerHTML += tableHTML + "</table><br>"
 }
-
 function showAllResults(data) {
   let output = document.getElementById("resultTableDiv");
   output.innerHTML = ""
