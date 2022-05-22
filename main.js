@@ -79,7 +79,6 @@ function genNPCtable() {
 }
 
 function genResultsTable(groups) {
-  groups = groups.map(group => [group[0],[...group[1]].map(x=>JSON.parse(x))])
   groups.sort((a,b) => {
     let c = a[1].map(y => y.map(x => baseBiomes.indexOf(x)).toString()).join("")
     let d = b[1].map(y => y.map(x => baseBiomes.indexOf(x)).toString()).join("")
@@ -112,7 +111,7 @@ function showAllResults(data) {
   let output = document.getElementById("resultTableDiv");
   output.innerHTML = ""
 
-  // sort groups within each solution
+  // sort groups within each solution by the people
   for (var solu of data) {
     solu = solu.sort((a,b) => {
     let c = JSON.stringify(a[0])
@@ -120,35 +119,25 @@ function showAllResults(data) {
       return c > d ? 1 : d > c ? -1 : 0
     })
   }
-  // sort all solutions
+  // sort all solutions by the people
   let sortedData = data.sort((a,b) => {
     let c = JSON.stringify(a.map(group=>group[0])); let d = JSON.stringify(b.map(group=>group[0]))
       return c > d ? 1 : d > c ? -1 : 0
   })
-  let prevsolu = sortedData[0]
-  let mergedsolu = JSON.parse(JSON.stringify(prevsolu)).map(elem => [elem[0], new Set([JSON.stringify(elem[1])])])
-  // only show solution if different from previous
+
+  genResultsTable(sortedData[0])
+
   for (let i=1; i<sortedData.length; i++) {
+    let prevsolu = sortedData[i-1]
     let solu = sortedData[i]
-    if (JSON.stringify(prevsolu) !== JSON.stringify(solu)) {
-      if (prevsolu.every((elem,i) => JSON.stringify(elem[0]) === JSON.stringify(solu[i][0]))) {
-        for (let j=0; j< mergedsolu.length; j++) {
-          mergedsolu[j][1].add(JSON.stringify(solu[j][1]))
-        }
-      } else {
-        genResultsTable(mergedsolu)
-        output.innerHTML += "Above has:<br>"
-        output.innerHTML += prevsolu.filter(x => !solu.map(y => JSON.stringify(y[0])).includes(JSON.stringify(x[0])))
-                                  .map(x => x[0].join(", ")).join("<br>")+"<br>"
-        output.innerHTML += "<br>Below has:<br>"
-        output.innerHTML += solu.filter(x => !prevsolu.map(y => JSON.stringify(y[0])).includes(JSON.stringify(x[0])))
-                                  .map(x => x[0].join(", ")).join("<br>")+"<br>"
-        mergedsolu = JSON.parse(JSON.stringify(solu)).map(elem => [elem[0], new Set([JSON.stringify(elem[1])])])
-      }
-    }
-    prevsolu = solu
+    output.innerHTML += "Above has:<br>"
+    output.innerHTML += prevsolu.filter(x => !solu.map(y => JSON.stringify(y[0])).includes(JSON.stringify(x[0])))
+                                .map(x => x[0].join(", ")).join("<br>")+"<br>"
+    output.innerHTML += "<br>Below has:<br>"
+    output.innerHTML += solu.filter(x => !prevsolu.map(y => JSON.stringify(y[0])).includes(JSON.stringify(x[0])))
+                            .map(x => x[0].join(", ")).join("<br>")+"<br>"
+    genResultsTable(solu)
   }
-  genResultsTable(mergedsolu)
 }
 function handleWorkerMessage(phase, data) {
   switch (phase) {

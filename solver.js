@@ -27,9 +27,7 @@ function generateArrayOfGroups(minGroupSize, maxGroupSize, people) {
   for (let groupSize = minGroupSize; groupSize <= maxGroupSize; groupSize++) {
     for (const group of combinations(groupSize, people)) {
       let groupInfo = groupHappWeightBiomes(group)
-      for (const biome of groupInfo[2]) {
-        arrayOfGroups.push([group, groupInfo[0], groupInfo[1], biome])
-      }
+      arrayOfGroups.push([group, ...groupInfo])
     }
   }
   arrayOfGroups.sort((a,b) => a[1] - b[1])
@@ -41,7 +39,6 @@ class Searcher {
   #bestCombinationsSoFar = []
   #bestHappinessSoFar = Infinity
   #possibleGroups = []
-  #minGroups = []
   #prevBranchesPruned = 0
   #branchesPruned = 0
   #newBestSolutionsFound = 0
@@ -79,49 +76,46 @@ class Searcher {
     
   }
 
-  maxBiomesCovered(subBiomes, remainingBiomes) {
-    if (remainingBiomes.length == 0 || subBiomes.length == 0) {return remainingBiomes.length}
-    let key = subBiomes.join("|")+" "+remainingBiomes.toString()
+  biomeCoverExists(biomeGroupsToUse, biomesToCover) {
+    if (biomesToCover.length == 0) { return true }
+    biomeGroupsToUse = biomeGroupsToUse.map(group => group.filter(biome => biomesToCover.includes(biome)))
+    biomeGroupsToUse = biomeGroupsToUse.filter(group => group.length > 0)
+    if (biomeGroupsToUse.length == 0) { return false }
+    let key = biomeGroupsToUse.join("|")+" "+biomesToCover.join("|")
     if (key in covers) { return covers[key] }
-    let bestCoverageYet = remainingBiomes.length
-    for (const biome of subBiomes[0]) {
-      bestCoverageYet = Math.min(bestCoverageYet,
-        this.maxBiomesCovered(subBiomes.slice(1), remainingBiomes.filter(x => x!=biome)))
+    let coverFound = false
+    let i = 0
+    while (i < biomeGroupsToUse[0].length && !coverFound) {
+      coverFound = this.biomeCoverExists(biomeGroupsToUse.slice(1), biomesToCover.filter(x => x != biomeGroupsToUse[0][i]))
+      i += 1
     }
-    covers[key] = bestCoverageYet ;return bestCoverageYet
+    covers[key] = coverFound
+    return coverFound
   }
   
-  findCombination(minIndex, prefixPeople, prefixBiomes, prefixHappiness, remainingPeople, remainingBiomes, remainingPeopleCount) {
-    
+  findCombination(minIndex, prefixPeople, prefixHappiness, remainingPeople, remainingPeopleCount) {
     if (remainingPeopleCount === 0) {
-      if (remainingBiomes.length == 0) {
+      if (this.minBiomes.length == 0) {
         this.handleNewCombination(prefixPeople, prefixHappiness)
       } else {
+        //check if cover exists
         this.statusUpdate()
-        prefixBiomes = prefixBiomes.map(subBiomes => {
-          return subBiomes.filter(subBiome => remainingBiomes.includes(subBiome))
-        })
-        let remainderBiomes = []
-        for (const subBiomes of prefixBiomes) {
-          if (subBiomes.length == 1) {
-            remainingBiomes = remainingBiomes.filter( someBiome => someBiome != subBiomes[0] )
-          } else if (subBiomes.length > 1) {remainderBiomes.push(subBiomes)}
+        let biomesGroups = []
+        for (const group of prefixPeople) {
+          if (group[0].length > 1) {
+            let tempBiomes = new Set()
+            group[1].map(biomes => biomes.map(biome => tempBiomes.add(biome)))
+            biomesGroups.push([...tempBiomes])
+          }
         }
-        if (this.maxBiomesCovered(remainderBiomes, remainingBiomes) == 0) {
+        if (this.biomeCoverExists(biomesGroups, this.minBiomes)) {
           this.handleNewCombination(prefixPeople, prefixHappiness)
         }
       }
     }
     let possibleGroups = this.#possibleGroups
     if (minIndex > possibleGroups.length - 1) { return this.statusUpdate() }
-
     if (this.minGroupSize > remainingPeopleCount) { return this.statusUpdate() }
-    if (this.minGroupSize == remainingPeopleCount) { possibleGroups = this.#minGroups; minIndex = 0 }
-    if (remainingPeopleCount  < Math.max(this.minGroupSize, 2) * remainingBiomes.length) {
-      if (remainingPeopleCount  < Math.max(this.minGroupSize, 2) * (remainingBiomes.length - prefixBiomes.length)) {
-        return this.statusUpdate()
-      }
-    }
     let bestHappinessSoFarCopy = Infinity
     let neededAvgHappiness = Infinity
     for (let i=minIndex; i < possibleGroups.length; i++) {
@@ -135,25 +129,12 @@ class Searcher {
         return this.statusUpdate()
       }
       let group = [possibleGroups[i][0], possibleGroups[i][3]]
-      let subBiomes = group[1]
       if (group[0].every(person => remainingPeople[person])) {
         let newPrefix = prefixPeople.slice()
         newPrefix.push(group)
         for (const person of group[0]) { remainingPeople[person] = false }
         let newPrefixHappiness = prefixHappiness + possibleGroups[i][2] * groupAvgHappiness
-        let newPrefixBiomes = prefixBiomes.slice()
-        let newRemainingBiomes = remainingBiomes.slice()
-        if (group[0].length > 1) {
-          let applicableSubBiomes = subBiomes.filter(subBiome => remainingBiomes.includes(subBiome))
-          if (applicableSubBiomes.length === 1) {
-            let subBiome = applicableSubBiomes[0]
-            newRemainingBiomes = remainingBiomes.filter(biome => subBiome !== biome)
-          }
-          else if (applicableSubBiomes.length > 1) {
-            newPrefixBiomes.push(applicableSubBiomes)
-          }
-        }
-        this.findCombination(i+1, newPrefix, newPrefixBiomes, newPrefixHappiness, remainingPeople, newRemainingBiomes, remainingPeopleCount - group[0].length)
+        this.findCombination(i+1, newPrefix, newPrefixHappiness, remainingPeople, remainingPeopleCount - group[0].length)
         for (const person of group[0]) { remainingPeople[person] = true }
       }
     }
@@ -162,11 +143,10 @@ class Searcher {
 
   search() {
     let cacheStart = performance.now()
-    this.#minGroups = generateArrayOfGroups(this.minGroupSize, this.minGroupSize, this.people)
     this.#possibleGroups = generateArrayOfGroups(this.minGroupSize, this.maxGroupSize, this.people)
     postMessage(["cache", ((performance.now() - cacheStart) / 1000).toFixed(3)])
     this.#start = performance.now()
-    this.findCombination(0, [], [], 0, Object.assign({}, ...this.people.map(num => ({[num]: true}))), this.minBiomes, this.people.length)
+    this.findCombination(0, [], 0, Object.assign({}, ...this.people.map(num => ({[num]: true}))), this.people.length)
     let timeElapsed = ((performance.now() - this.#start) / 1000).toFixed(3)
     postMessage(["mid", [this.#newBestSolutionsFound, timeElapsed,this.#branchesPruned]])
     postMessage(["result", this.#bestCombinationsSoFar])
