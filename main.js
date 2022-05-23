@@ -203,10 +203,10 @@ function startSearch() {
     biomes = biomes.concat(biomes2Natural)
   }
   if (document.getElementById("useBiomes2Easy").checked) {
-    biomes = biomes.concat(biomes2Easy)
+    biomes = biomes.concat(biomes2Easy, biomes3Easy)
   }
   if (document.getElementById("useBiomes2Rest").checked) {
-    biomes = biomes.concat(biomes2Rest)
+    biomes = biomes.concat(biomes2Rest, biomes3Rest)
   }
   myWorker = new Worker("solver.js")
   myWorker.postMessage([[npcdict,biomes],[peopleWeCanUse, minGroupSize, maxGroupSize, minBiomes]])

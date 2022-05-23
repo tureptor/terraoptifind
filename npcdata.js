@@ -1,8 +1,14 @@
 const baseBiomes = ["Forest", "Hallow","Caverns","Desert","Jungle","Ocean","Snow","Mushroom"]
 const biomes1 = [["Forest"], ["Hallow"], ["Caverns"], ["Desert"], ["Jungle"], ["Ocean"], ["Snow"], ["Mushroom"]]
+
 const biomes2Natural = [["Hallow","Caverns"], ["Caverns","Desert"],["Caverns","Jungle"],["Caverns","Ocean"],["Caverns","Snow"],["Caverns","Mushroom"]]
-const biomes2Easy = [["Hallow","Desert"],["Hallow","Desert","Ocean"], ["Hallow","Jungle"], ["Hallow","Snow"], ["Hallow","Mushroom"]]
+const biomes2Easy = [["Hallow","Desert"], ["Hallow","Jungle"], ["Hallow","Snow"], ["Hallow","Mushroom"]]
 const biomes2Rest = [["Hallow","Ocean"], ["Desert","Jungle"], ["Desert","Mushroom"], ["Desert","Snow"], ["Desert","Mushroom"], ["Jungle","Ocean"], ["Jungle","Snow"], ["Jungle","Mushroom"], ["Ocean","Snow"], ["Ocean","Mushroom"], ["Snow","Mushroom"]]
+
+const biomes3Easy = [["Hallow", "Caverns", "Desert"], ["Hallow", "Caverns", "Snow"], ["Hallow", "Desert", "Ocean"], ["Caverns", "Jungle", "Mushroom"]]
+
+const biomes3Rest = [["Hallow", "Caverns", "Jungle"], ["Hallow", "Desert", "Jungle"], ["Hallow", "Caverns", "Mushroom"], ["Hallow", "Desert", "Snow"], ["Hallow", "Desert", "Mushroom"], ["Hallow", "Jungle", "Ocean"], ["Hallow", "Jungle", "Snow"], ["Caverns", "Desert", "Jungle"], ["Hallow", "Jungle", "Mushroom"], ["Hallow", "Ocean", "Snow"], ["Caverns", "Desert", "Snow"], ["Caverns", "Desert", "Mushroom"], ["Hallow", "Ocean", "Mushroom"], ["Caverns", "Jungle", "Snow"], ["Hallow", "Snow", "Mushroom"], ["Desert", "Jungle", "Snow"], ["Caverns", "Snow", "Mushroom"], ["Desert", "Jungle", "Mushroom"], ["Desert", "Snow", "Mushroom"], ["Jungle", "Ocean", "Snow"], ["Jungle", "Ocean", "Mushroom"], ["Jungle", "Snow", "Mushroom"], ["Ocean", "Snow", "Mushroom"]]
+
 var npcdict = {
     "Guide": {
         "biome_liked": "Forest",
