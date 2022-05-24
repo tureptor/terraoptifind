@@ -208,7 +208,7 @@ function startSearch() {
   if (document.getElementById("useBiomes2Rest").checked) {
     biomes = biomes.concat(biomes2Rest, biomes3Rest)
   }
-  myWorker = new Worker("solver.js")
+
   myWorker.postMessage([[npcdict,biomes],[peopleWeCanUse, minGroupSize, maxGroupSize, minBiomes]])
   myWorker.onmessage = function(e){handleWorkerMessage(...e["data"])}
 }
