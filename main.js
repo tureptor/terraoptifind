@@ -168,11 +168,11 @@ function handleWorkerMessage(phase, data) {
      default:
   }     
 }
-
-let myWorker = new Worker("solver.js")
+let myWorker = null
 function startSearch() {
-  myWorker.terminate()
-    requestAnimationFrame( () => {
+  if (myWorker) { myWorker.terminate() }
+  myWorker = new Worker("solver.js")
+  requestAnimationFrame( () => {
     document.getElementById("timeElapsedCache").innerHTML = "0.000"
     document.getElementById("newBestSolutionsFound").innerHTML = "0"
     document.getElementById("timeElapsedSearch").innerHTML = "0.000"
