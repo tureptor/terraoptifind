@@ -65,7 +65,7 @@ class Searcher {
 
   handleNewCombination(newCombination, newHappiness) {
     this.statusUpdate()
-    if (+(this.#bestHappinessSoFar).toFixed(3) > +(newHappiness).toFixed(3)) {
+    if (+(this.#bestHappinessSoFar).toFixed(10) > +(newHappiness).toFixed(10)) {
       this.#bestCombinationsSoFar = []
       this.#newBestSolutionsFound += 1
       postMessage(["result", [newCombination]])
