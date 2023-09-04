@@ -540,9 +540,9 @@ var npcdict = {
         mod: 'Terraria',
     }
 };
- /**@type {Record<string, keyof npcdict>} */
+/**@type {Record<string, keyof npcdict>} */
 const modNpcs = {};
-for (const [npcName, {mod}] of npcdict) {
+for (const [npcName, { mod }] of Object.entries(npcdict)) {
     modNpcs[mod] ??= [];
     modNpcs[mod].push(npcName);
 }
