@@ -1,3 +1,4 @@
+// @ts-check
 /** @enum {string} */
 const Biome = {
     Forest: 'Forest',
@@ -28,10 +29,10 @@ const biomes3Rest = [["Hallow", "Caverns", "Jungle"], ["Hallow", "Desert", "Jung
  * @prop {Biome} biome_liked - NPC's preferred biome
  * @prop {Biome} biome_disliked - NPC's unpreferred biome
  * @prop {Biome} biome_hated - NPC's most unpreferred biome
- * @prop {(keyof npcdict)[]} loves - NPC's loved NPCs
- * @prop {(keyof npcdict)[]} likes - NPC's liked NPCs
- * @prop {(keyof npcdict)[]} dislikes - NPC's disliked NPCs
- * @prop {(keyof npcdict)[]} hates - NPC's hated NPCs
+ * @prop {(keyof typeof npcdict)[]} loves - NPC's loved NPCs
+ * @prop {(keyof typeof npcdict)[]} likes - NPC's liked NPCs
+ * @prop {(keyof typeof npcdict)[]} dislikes - NPC's disliked NPCs
+ * @prop {(keyof typeof npcdict)[]} hates - NPC's hated NPCs
  * @prop {number} weighting - How much we care about this NPC
  * @prop {string} mod - Which mod (or vanilla) this NPC is from
  */
@@ -599,8 +600,128 @@ var npcdict = {
         weighting: 1.0,
         mod: 'Calamity',
     },
+    Cobbler: {
+        biome_loved: Biome.None,
+        biome_liked: Biome.Forest,
+        biome_disliked: Biome.Ocean,
+        biome_hated: Biome.None,
+        loves: ['Zoologist', 'Golfer'],
+        likes: ['Spiritualist'],
+        dislikes: ['Druid', 'Dryad', 'Angler'],
+        hates: ['Nurse'],
+        weighting: 1.0,
+        mod: 'Thorium',
+    },
+    "Desert Acolyte": {
+        biome_loved: Biome.None,
+        biome_liked: Biome.Desert,
+        biome_disliked: Biome.Jungle,
+        biome_hated: Biome.None,
+        loves: [],
+        likes: ['Nurse', 'Spiritualist'],
+        dislikes: ['Pirate'],
+        hates: ['Goblin Tinkerer', 'Witch Doctor', 'Weapon Master'],
+        weighting: 1.0,
+        mod: 'Thorium',
+    },
+    Cook: {
+        biome_loved: Biome.None,
+        biome_liked: Biome.Mushroom,
+        biome_disliked: Biome.Caverns,
+        biome_hated: Biome.None,
+        loves: ['Santa Claus'],
+        likes: ['Truffle'],
+        dislikes: ['Angler'],
+        hates: ['Cyborg'],
+        weighting: 1.0,
+        mod: 'Thorium',
+    },
+    "Confused Zombie": {
+        biome_loved: Biome.None,
+        biome_liked: Biome.Forest,
+        biome_disliked: Biome.Snow,
+        biome_hated: Biome.None,
+        loves: ['Guide'],
+        likes: ['Clothier'],
+        dislikes: ['Spiritualist'],
+        hates: [],
+        weighting: 1.0,
+        mod: 'Thorium',
+    },
+    Blacksmith: {
+        biome_loved: Biome.None,
+        biome_liked: Biome.Caverns,
+        biome_disliked: Biome.None,
+        biome_hated: Biome.None,
+        loves: ['Demolitionist'],
+        likes: ['Weapon Master'],
+        dislikes: ['Tracker'],
+        hates: [],
+        weighting: 1.0,
+        mod: 'Thorium',
+    },
+    Tracker: {
+        biome_loved: Biome.None,
+        biome_liked: Biome.Snow,
+        biome_disliked: Biome.Forest,
+        biome_hated: Biome.None,
+        loves: ['Tavernkeep'],
+        likes: ['Guide', 'Stylist'],
+        dislikes: ['Dye Trader'],
+        hates: ['Desert Acolyte'],
+        weighting: 1.0,
+        mod: 'Thorium',
+    },
+    Diverman: {
+        biome_loved: Biome.None,
+        biome_liked: Biome.Ocean,
+        biome_disliked: Biome.Desert,
+        biome_hated: Biome.None,
+        loves: ['Party Girl'],
+        likes: ['Pirate'],
+        dislikes: ['Angler'],
+        hates: [],
+        weighting: 1.0,
+        mod: 'Thorium',
+    },
+    Druid: {
+        biome_loved: Biome.None,
+        biome_liked: Biome.Jungle,
+        biome_disliked: Biome.Snow,
+        biome_hated: Biome.None,
+        loves: [],
+        likes: ['Dryad'],
+        dislikes: ['Demolitionist'],
+        hates: ['Steampunker'],
+        weighting: 1.0,
+        mod: 'Thorium',
+    },
+    Spiritualist: {
+        biome_loved: Biome.None,
+        biome_liked: Biome.Hallow,
+        biome_disliked: Biome.Caverns,
+        biome_hated: Biome.None,
+        loves: ['Stylist'],
+        likes: ['Witch Doctor'],
+        dislikes: ['Weapon Master'],
+        hates: ['Tax Collector'],
+        weighting: 1.0,
+        mod: 'Thorium',
+    },
+    "Weapon Master": {
+        biome_loved: Biome.None,
+        biome_liked: Biome.Caverns,
+        biome_disliked: Biome.Hallow,
+        biome_hated: Biome.None,
+        loves: ['Tax Collector'],
+        likes: ['Goblin Tinkerer', 'Witch Doctor'],
+        dislikes: ['Confused Zombie', 'Guide'],
+        hates: ['Spiritualist'],
+        weighting: 1.0,
+        mod: 'Thorium',
+    },
 };
-/**@type {Record<string, keyof npcdict>} */
+/**@type {Record<string, (keyof typeof npcdict)[]>} */
 const modNpcs = {};
 for (const [npcName, { mod }] of Object.entries(npcdict)) {
     modNpcs[mod] ??= [];
