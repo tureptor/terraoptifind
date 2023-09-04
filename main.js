@@ -81,7 +81,7 @@ function genNPCtable() {
     let output = document.createElement('div');
     let slider = document.createElement('input');
     slider.type = 'range';
-    slider.style.width = '5em';
+    slider.style.width = '15em';
     slider.min = 0;
     slider.max = 20;
     slider.step = 'any';
@@ -93,6 +93,7 @@ function genNPCtable() {
     exact.onchange = (event) => slider.value = event.target.value;
     slider.onchange = (event) => exact.value = event.target.value;
     exact.min = 0;
+    exact.step = 'any';
     exact.value = 1;
     output.replaceChildren(slider, exact);
     return output;
