@@ -94,7 +94,8 @@ function genNPCtable() {
     slider.onchange = (event) => exact.value = event.target.value;
     exact.min = 0;
     exact.value = 1;
-    return exact;
+    output.replaceChildren(slider, exact);
+    return output;
   };
   table.appendChild(header);
   for (const person of people) {
