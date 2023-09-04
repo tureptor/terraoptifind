@@ -58,24 +58,46 @@ function includePylonBiomes() {
 
 function genNPCtable() {
   let output = document.getElementById('npcTableDiv');
-  let tableHTML = "<table>";
-  tableHTML += "<tr> <th>NPC name</th> <th>Include this NPC?</th>";
-  tableHTML += "<th>Weighting for this NPC (higher = more important, should be >= 0)</th></tr>";
+  let table = document.createElement('table');
+  let header = document.createElement('tr');
+  let td = (child, tag = 'td') => {
+    let output = document.createElement(tag);
+    output.replaceChildren(child);
+    return output;
+  };
+  header.replaceChildren(
+    td('NPC name', 'th'),
+    td('Include this NPC?', 'th'),
+    td('NPC importance (higher = more important)', 'th'),
+  );
+  let enableBox = (person) => {
+    let output = document.createElement('input');
+    output.type = 'checkbox';
+    output.onchange = updateNumPossibleGroups;
+    output.id = `${person}Checkbox`;
+    return output;
+  };
+  let weightBox = (person) => {
+    let output = document.createElement('input');
+    output.type = 'number';
+    output.style.width = '5em';
+    output.id = `${person}Weighting`;
+    output.min = 0;
+    output.value = 1;
+    return output;
+  };
+  table.appendChild(header);
   for (const person of people) {
-    tableHTML += "<tr>";
+    let row = document.createElement('tr');
     // name
-    tableHTML += "<td>" + person + "</td>";
-    // "should use?" checkbox
-    tableHTML += "<td style=\"text-align:center\"> <input style=\"width:1.5em; height:1.5em\"";
-    tableHTML += "type=\"checkbox\" id=\"" + person + "Checkbox\" onchange=\"updateNumPossibleGroups()\"> </td>";
+    row.appendChild(td(person));
+    // include
+    row.appendChild(td(enableBox(person)));
     // weighting
-    tableHTML += "<td style=\"text-align:center\"> <input style=\"width:5em\" type=number ";
-    tableHTML += "id=\"" + person + "Weighting\" min=0 value=1.0> </td>";
-
-    tableHTML += "</tr>";
+    row.appendChild(td(weightBox(person)));
+    table.appendChild(row);
   }
-  tableHTML += "</table>";
-  output.innerHTML += tableHTML;
+  output.replaceChildren(table);
 
   let buttons = [];
 
