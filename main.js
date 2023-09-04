@@ -77,6 +77,7 @@ function genNPCtable() {
     output.id = `${person}Checkbox`;
     return output;
   };
+  let allWeightInputs = [];
   let weightBox = (person) => {
     let output = document.createElement('div');
     let slider = document.createElement('input');
@@ -95,6 +96,7 @@ function genNPCtable() {
     exact.min = 0;
     exact.step = 'any';
     exact.value = 1;
+    allWeightInputs.push(slider, exact);
     output.replaceChildren(slider, exact);
     return output;
   };
@@ -134,6 +136,9 @@ function genNPCtable() {
     };
     buttons.push(remButton);
   });
+  let resetWeightButton = document.createElement('button');
+  resetWeightButton.textContent = "Reset importance of ALL NPCs";
+  resetWeightButton.onclick = () => allWeightInputs.forEach(input => input.value = 1);
   // I don't know how many times this is called. Use replaceChildren as it should be fast
   document.getElementById('quickButtons').replaceChildren(...buttons);
 }
