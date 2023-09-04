@@ -90,8 +90,8 @@ function genNPCtable() {
     exact.type = 'number';
     exact.style.width = '5em';
     exact.id = `${person}Weighting`;
-    exact.onchange = (event) => slider.value = event.target.value;
-    slider.onchange = (event) => exact.value = event.target.value;
+    exact.oninput = (event) => slider.value = event.target.value;
+    slider.oninput = (event) => exact.value = event.target.value;
     exact.min = 0;
     exact.step = 'any';
     exact.value = 1;
