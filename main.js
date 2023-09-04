@@ -78,13 +78,23 @@ function genNPCtable() {
     return output;
   };
   let weightBox = (person) => {
-    let output = document.createElement('input');
-    output.type = 'number';
-    output.style.width = '5em';
-    output.id = `${person}Weighting`;
-    output.min = 0;
-    output.value = 1;
-    return output;
+    let output = document.createElement('div');
+    let slider = document.createElement('input');
+    slider.type = 'range';
+    slider.style.width = '5em';
+    slider.min = 0;
+    slider.max = 20;
+    slider.step = 'any';
+    slider.value = 1;
+    let exact = document.createElement('input');
+    exact.type = 'number';
+    exact.style.width = '5em';
+    exact.id = `${person}Weighting`;
+    exact.onchange = (event) => slider.value = event.target.value;
+    slider.onchange = (event) => exact.value = event.target.value;
+    exact.min = 0;
+    exact.value = 1;
+    return exact;
   };
   table.appendChild(header);
   for (const person of people) {
