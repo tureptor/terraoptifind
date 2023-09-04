@@ -1,6 +1,6 @@
 # terraoptifind
 
-[Link to interactive calculator](https://tureptor.github.io/terraoptifind/)
+[Link to interactive calculator](https://starwort.github.io/terraoptifind/)
 
 Finds optimal NPC housing combinations for Terraria. Can optionally exclude certain NPCs or give them different weights.
 
