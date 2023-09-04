@@ -101,7 +101,7 @@ function genNPCtable() {
     buttons.push(remButton);
   });
   // I don't know how many times this is called. Use replaceChildren as it should be fast
-  document.getElementById('quickButtons').replaceChildren(buttons);
+  document.getElementById('quickButtons').replaceChildren(...buttons);
 }
 
 function genResultsTable(groups) {
