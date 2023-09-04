@@ -80,7 +80,7 @@ function genNPCtable() {
   let buttons = [];
 
   Object.entries(modNpcs).forEach(([mod, npcs]) => {
-    let addButton = new HTMLButtonElement();
+    let addButton = document.createElement('button');
     addButton.textContent = `Select all ${mod} NPCs`;
     addButton.onclick = () => {
       for (const npc of npcs) {
@@ -90,7 +90,7 @@ function genNPCtable() {
     };
     buttons.push(addButton);
 
-    let remButton = new HTMLButtonElement();
+    let remButton = document.createElement('button');
     remButton.textContent = `Deselect all ${mod} NPCs`;
     remButton.onclick = () => {
       for (const npc of npcs) {
