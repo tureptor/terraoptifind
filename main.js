@@ -9,6 +9,10 @@ function updateNumPossibleGroups() {
     }
   }
 
+  if (n == 0) {
+    document.getElementById("numPossibleGroups").value = 0;
+  }
+
   let minGroupSize = document.getElementById("minGroupSize").value;
   let maxGroupSize = document.getElementById("maxGroupSize").value;
 
@@ -139,6 +143,7 @@ function genNPCtable() {
   let resetWeightButton = document.createElement('button');
   resetWeightButton.textContent = "Reset importance of ALL NPCs";
   resetWeightButton.onclick = () => allWeightInputs.forEach(input => input.value = 1);
+  buttons.push(resetWeightButton);
   // I don't know how many times this is called. Use replaceChildren as it should be fast
   document.getElementById('quickButtons').replaceChildren(...buttons);
 }
