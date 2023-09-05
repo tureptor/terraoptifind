@@ -74,7 +74,9 @@ function generateArrayOfGroups(minGroupSize, maxGroupSize, people, cacheStart) {
   /** @type {[(keyof typeof npcdict)[], BigInt, number, number, Biome[][]][]} */
   const arrayOfGroups = [];
   let n = 0;
-  for (let groupSize = minGroupSize; groupSize <= maxGroupSize; groupSize++) {
+  // Generating the groups in reverse order of size means larger groups will be preferred over smaller ones
+  // This is because `Array.sort` is stable
+  for (let groupSize = maxGroupSize; groupSize >= minGroupSize; groupSize--) {
     for (const [group, mask] of combinations(groupSize, people)) {
       let groupInfo = groupHappWeightBiomes(group);
       arrayOfGroups.push([group, mask, ...groupInfo]);
@@ -85,7 +87,6 @@ function generateArrayOfGroups(minGroupSize, maxGroupSize, people, cacheStart) {
     }
   }
   arrayOfGroups.sort((a, b) => a[2] - b[2]);
-  console.log(arrayOfGroups);
   return arrayOfGroups;
 }
 
