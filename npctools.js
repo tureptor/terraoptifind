@@ -64,7 +64,7 @@ function oneHappiness(name, biome, townNpcs) {
 }
 
 
-/** @param {(keyof typeof npcdict)[]} group */
+/** @param {Iterable<(keyof typeof npcdict)>} group */
 function sumOfWeights(group) {
   let totalWeight = 0;
   for (const person of group) {
@@ -75,7 +75,10 @@ function sumOfWeights(group) {
 
 // input group of names of npcs
 // return array of the biome(s) which minimise happiness
-/** @param {(keyof typeof npcdict)[]} group */
+/**
+ * @param {(keyof typeof npcdict)[]} group
+ * @returns {Biome[][]} Best biomes
+ */
 function bestBiomesForGroup(group) {
   let lowestHappinessSoFar = Infinity;
   let bestBiomesSoFar = [];
@@ -99,7 +102,10 @@ function bestBiomesForGroup(group) {
   return bestBiomesSoFar;
 }
 
-/** @param {(keyof typeof npcdict)[]} group */
+/** 
+ * @param {(keyof typeof npcdict)[]} group
+ * @returns {[number, number, Biome[][]]} Average happiness, total group weight, best biomes
+ */
 function groupHappWeightBiomes(group) {
   let bestBiomes = bestBiomesForGroup(group);
   let thisGroupHappiness = 0.0;

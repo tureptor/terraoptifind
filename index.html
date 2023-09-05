@@ -18,10 +18,9 @@
     <input type="number" id="maxGroupSize" min="1" max="25" value="4" onchange="updateNumPossibleGroups()">
   </div>
 
-  <div>
-    <label>Number of possible groups:</label>
+  <label>Number of possible groups:
     <output id="numPossibleGroups"></output>
-  </div>
+  </label>
 
   <div>
     <div id="biomeTableDiv"></div>
@@ -54,28 +53,28 @@
 
 
   <div>
-    <button onclick="startSearch()">Start search</button>
+    <button id="start" onclick="startSearch()">Start search</button>
   </div>
 
-  <div>
-    <label>Branches pruned:</label>
+  <label>Branches pruned:
     <output id="branchesPruned">0</output>
-  </div>
+  </label>
 
-  <div>
-    <label>Tentative solutions improved on:</label>
+  <label>Tentative solutions improved on:
     <output id="newBestSolutionsFound">0</output>
-  </div>
+  </label>
 
-  <div>
-    <label>Time elapsed to generate cache (seconds):</label>
+  <label>Cache generation progress:
+    <output id="cacheGenPercent">0.00%</output>
+  </label>
+
+  <label>Time elapsed to generate cache (seconds):
     <output id="timeElapsedCache">0.000</output>
-  </div>
+  </label>
 
-  <div>
-    <label>Time elapsed to find best solution(s) (seconds):</label>
+  <label>Time elapsed to find best solution(s) (seconds):
     <output id="timeElapsedSearch">0.000</output>
-  </div>
+  </label>
 
   <div>
     <p>Equally good solutions are listed in order of discovery.</p>

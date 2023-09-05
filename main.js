@@ -12,6 +12,7 @@ function updateNumPossibleGroups() {
 
   if (n == 0) {
     document.getElementById("numPossibleGroups").value = 0;
+    return;
   }
 
   let minGroupSize = document.getElementById("minGroupSize").value;
@@ -214,15 +215,23 @@ function handleWorkerMessage(phase, data) {
   switch (phase) {
     case "mid":
       requestAnimationFrame(() => {
-        document.getElementById("newBestSolutionsFound").innerHTML = data[0];
-        document.getElementById("timeElapsedSearch").innerHTML = data[1];
-        document.getElementById("branchesPruned").innerHTML = data[2];
+        document.getElementById("newBestSolutionsFound").value = data[0];
+        document.getElementById("timeElapsedSearch").value = data[1];
+        document.getElementById("branchesPruned").value = data[2];
+      });
+      break;
+
+    case "cacheGen":
+      requestAnimationFrame(() => {
+        document.getElementById("cacheGenPercent").value = (data[0] * 100).toFixed(2) + '%';
+        document.getElementById("timeElapsedCache").value = data[1];
       });
       break;
 
     case "cache":
       requestAnimationFrame(() => {
-        document.getElementById("timeElapsedCache").innerHTML = data;
+        document.getElementById("timeElapsedCache").value = data;
+        document.getElementById("cacheGenPercent").value = '100%';
       });
       break;
 
@@ -232,8 +241,9 @@ function handleWorkerMessage(phase, data) {
 
     case "done":
       requestAnimationFrame(() => {
-        document.getElementById("timeElapsedSearch").innerHTML += " FINISHED";
+        document.getElementById("timeElapsedSearch").value += " FINISHED";
       });
+      document.getElementById('start').disabled = false;
       break;
 
     default:
@@ -241,6 +251,7 @@ function handleWorkerMessage(phase, data) {
 }
 let myWorker = null;
 function startSearch() {
+  document.getElementById('start').disabled = true;
   if (myWorker) { myWorker.terminate(); }
   myWorker = new Worker("solver.js");
   requestAnimationFrame(() => {
