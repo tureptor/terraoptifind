@@ -1,6 +1,7 @@
 // @ts-check
 /** @enum {string} */
 const Biome = {
+    Space: 'Space',
     Forest: 'Forest',
     Hallow: 'Hallow',
     Caverns: 'Caverns',
@@ -13,15 +14,27 @@ const Biome = {
 };
 
 const baseBiomes = ["Forest", "Hallow", "Caverns", "Desert", "Jungle", "Ocean", "Snow", "Mushroom"];
-const biomes1 = [["Forest"], ["Hallow"], ["Caverns"], ["Desert"], ["Jungle"], ["Ocean"], ["Snow"], ["Mushroom"]];
+const biomes1 = [["Forest"], ["Hallow"], ["Caverns"], ["Space"], ["Desert"], ["Jungle"], ["Ocean"], ["Snow"], ["Mushroom"]];
 
-const biomes2Natural = [["Hallow", "Caverns"], ["Caverns", "Desert"], ["Caverns", "Jungle"], ["Caverns", "Ocean"], ["Caverns", "Snow"], ["Caverns", "Mushroom"]];
-const biomes2Easy = [["Hallow", "Desert"], ["Hallow", "Jungle"], ["Hallow", "Snow"], ["Hallow", "Mushroom"]];
+const biomes2Natural = [
+    ["Hallow", "Caverns"], ["Caverns", "Desert"], ["Caverns", "Jungle"], ["Caverns", "Ocean"], ["Caverns", "Snow"], ["Caverns", "Mushroom"],
+    ['Space', 'Ocean'], ['Space', 'Forest'],
+];
+const biomes2Easy = [
+    ["Hallow", "Desert"], ["Hallow", "Jungle"], ["Hallow", "Snow"], ["Hallow", "Mushroom"],
+    ["Hallow", "Space"], ["Space", "Desert"], ["Space", "Jungle"], ["Space", "Snow"], ["Space", "Mushroom"],
+];
 const biomes2Rest = [["Hallow", "Ocean"], ["Desert", "Jungle"], ["Desert", "Mushroom"], ["Desert", "Snow"], ["Desert", "Mushroom"], ["Jungle", "Ocean"], ["Jungle", "Snow"], ["Jungle", "Mushroom"], ["Ocean", "Snow"], ["Ocean", "Mushroom"], ["Snow", "Mushroom"]];
 
-const biomes3Easy = [["Hallow", "Caverns", "Desert"], ["Hallow", "Caverns", "Snow"], ["Hallow", "Desert", "Ocean"], ["Caverns", "Jungle", "Mushroom"]];
+const biomes3Easy = [
+    ["Hallow", "Caverns", "Desert"], ["Hallow", "Caverns", "Snow"], ["Hallow", "Desert", "Ocean"], ["Caverns", "Jungle", "Mushroom"],
+    ["Hallow", "Space", "Desert"], ["Hallow", "Space", "Snow"], ["Hallow", "Desert", "Ocean"], ["Space", "Jungle", "Mushroom"],
+];
 
-const biomes3Rest = [["Hallow", "Caverns", "Jungle"], ["Hallow", "Desert", "Jungle"], ["Hallow", "Caverns", "Mushroom"], ["Hallow", "Desert", "Snow"], ["Hallow", "Desert", "Mushroom"], ["Hallow", "Jungle", "Ocean"], ["Hallow", "Jungle", "Snow"], ["Caverns", "Desert", "Jungle"], ["Hallow", "Jungle", "Mushroom"], ["Hallow", "Ocean", "Snow"], ["Caverns", "Desert", "Snow"], ["Caverns", "Desert", "Mushroom"], ["Hallow", "Ocean", "Mushroom"], ["Caverns", "Jungle", "Snow"], ["Hallow", "Snow", "Mushroom"], ["Desert", "Jungle", "Snow"], ["Caverns", "Snow", "Mushroom"], ["Desert", "Jungle", "Mushroom"], ["Desert", "Snow", "Mushroom"], ["Jungle", "Ocean", "Snow"], ["Jungle", "Ocean", "Mushroom"], ["Jungle", "Snow", "Mushroom"], ["Ocean", "Snow", "Mushroom"]];
+const biomes3Rest = [
+    ["Hallow", "Caverns", "Jungle"], ["Hallow", "Desert", "Jungle"], ["Hallow", "Caverns", "Mushroom"], ["Hallow", "Desert", "Snow"], ["Hallow", "Desert", "Mushroom"], ["Hallow", "Jungle", "Ocean"], ["Hallow", "Jungle", "Snow"], ["Caverns", "Desert", "Jungle"], ["Hallow", "Jungle", "Mushroom"], ["Hallow", "Ocean", "Snow"], ["Caverns", "Desert", "Snow"], ["Caverns", "Desert", "Mushroom"], ["Hallow", "Ocean", "Mushroom"], ["Caverns", "Jungle", "Snow"], ["Hallow", "Snow", "Mushroom"], ["Desert", "Jungle", "Snow"], ["Caverns", "Snow", "Mushroom"], ["Desert", "Jungle", "Mushroom"], ["Desert", "Snow", "Mushroom"], ["Jungle", "Ocean", "Snow"], ["Jungle", "Ocean", "Mushroom"], ["Jungle", "Snow", "Mushroom"], ["Ocean", "Snow", "Mushroom"],
+    ["Hallow", "Space", "Jungle"], ["Hallow", "Space", "Mushroom"], ["Space", "Desert", "Jungle"], ["Space", "Desert", "Snow"], ["Space", "Desert", "Mushroom"], ["Space", "Jungle", "Snow"], ["Space", "Snow", "Mushroom"],
+];
 
 /**
  * @typedef {Object} NPCInfo
@@ -591,7 +604,7 @@ var npcdict = {
     "Brimstone Witch": {
         biome_loved: Biome.None,
         biome_liked: Biome.Forest,
-        biome_disliked: Biome.None,
+        biome_disliked: Biome.None, // Brimstone Crag, but we never suggest that anyway
         biome_hated: Biome.None,
         loves: [],
         likes: ['Clothier'],
@@ -815,6 +828,66 @@ var npcdict = {
         hates: [],
         weighting: 1.0,
         mod: 'AlchemistNPC',
+    },
+    LumberJack: {
+        biome_loved: Biome.Forest,
+        biome_liked: Biome.None,
+        biome_disliked: Biome.None,
+        biome_hated: Biome.None,
+        loves: [],
+        likes: ['Squirrel'],
+        dislikes: ['Dryad'],
+        hates: ['Demolitionist'],
+        weighting: 1.0,
+        mod: "Fargo's Mod",
+    },
+    Deviantt: {
+        biome_loved: Biome.Space,
+        biome_liked: Biome.Jungle,
+        biome_disliked: Biome.Snow,
+        biome_hated: Biome.Desert,
+        loves: ['Mutant'],
+        likes: ['Abominationn'],
+        dislikes: ['Zoologist'],
+        hates: ['Angler'],
+        weighting: 1.0,
+        mod: "Fargo's Mod",
+    },
+    Abominationn: {
+        biome_loved: Biome.Space,
+        biome_liked: Biome.Ocean,
+        biome_disliked: Biome.None, // Dungeon, but we never suggest that anyway
+        biome_hated: Biome.None,
+        loves: ['Mutant'],
+        likes: ['Deviantt'],
+        dislikes: [],
+        hates: ['Nurse'],
+        weighting: 1.0,
+        mod: "Fargo's Mod",
+    },
+    Mutant: {
+        biome_loved: Biome.Space,
+        biome_liked: Biome.Forest,
+        biome_disliked: Biome.Hallow,
+        biome_hated: Biome.None,
+        loves: ['Abominationn'],
+        likes: ['Deviantt'],
+        dislikes: ['LumberJack'],
+        hates: [],
+        weighting: 1.0,
+        mod: "Fargo's Mod",
+    },
+    Squirrel: {
+        biome_loved: Biome.Forest,
+        biome_liked: Biome.None,
+        biome_disliked: Biome.None,
+        biome_hated: Biome.Caverns,
+        loves: [],
+        likes: ['LumberJack'],
+        dislikes: [],
+        hates: [],
+        weighting: 1.0,
+        mod: "Fargo's Mod",
     },
 };
 /**@type {Record<string, (keyof typeof npcdict)[]>} */
