@@ -164,10 +164,10 @@ function genResultsTable(groups) {
       let copyWithoutB = biome.slice(); copyWithoutB.splice(i, 1);
       return copyWithoutB.every(y => y.some(x => !b.includes(x)));
     }); // basically if [[hallow],[hallow,desert]] then reduce this to just [[hallow]]
-    tableHTML += "<tr><td>" + biome.map(x => x.join("")).join(" | ") + "</td><td>";
+    tableHTML += "<tr><td>" + biome.map(x => x.join(" + ")).join("<br />") + "</td><td>";
     for (const person of group[0]) {
       tableHTML += person;
-      let neighbours = group[0].filter((name, index) => name !== person);
+      let neighbours = group[0].filter((name) => name !== person);
       let personHappiness = biome.map(b => (oneHappiness(person, b, neighbours) / npcdict[person]["weighting"]).toFixed(2));
       tableHTML += "(" + personHappiness.join(",") + "), ";
     }
