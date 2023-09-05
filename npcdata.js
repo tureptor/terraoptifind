@@ -24,7 +24,7 @@ const biomes2Easy = [
     ["Hallow", "Desert"], ["Hallow", "Jungle"], ["Hallow", "Snow"], ["Hallow", "Mushroom"],
     ["Hallow", "Space"], ["Space", "Desert"], ["Space", "Jungle"], ["Space", "Snow"], ["Space", "Mushroom"],
 ];
-const biomes2Rest = [["Hallow", "Ocean"], ["Desert", "Jungle"], ["Desert", "Mushroom"], ["Desert", "Snow"], ["Desert", "Mushroom"], ["Jungle", "Ocean"], ["Jungle", "Snow"], ["Jungle", "Mushroom"], ["Ocean", "Snow"], ["Ocean", "Mushroom"], ["Snow", "Mushroom"]];
+const biomes2Rest = [["Hallow", "Ocean"], ["Desert", "Jungle"], ["Desert", "Mushroom"], ["Desert", "Snow"], ["Jungle", "Ocean"], ["Jungle", "Snow"], ["Jungle", "Mushroom"], ["Ocean", "Snow"], ["Ocean", "Mushroom"], ["Snow", "Mushroom"]];
 
 const biomes3Easy = [
     ["Hallow", "Caverns", "Desert"], ["Hallow", "Caverns", "Snow"], ["Hallow", "Desert", "Ocean"], ["Caverns", "Jungle", "Mushroom"],
