@@ -29,19 +29,21 @@
 
   <button onclick="includePylonBiomes()">Select pylon biomes</button>
 
-
   <label>Use naturally occuring hybrid biomes
     <input type="checkbox" id="useBiomes2Natural" checked />
   </label>
-
 
   <label>Use (easily) creatable hybrid biomes
     <input type="checkbox" id="useBiomes2Easy" checked />
   </label>
 
-
   <label>Use the other feasible hybrid biomes
     <input type="checkbox" id="useBiomes2Rest" checked />
+  </label>
+
+  <label>Allow Truffle to be placed outside of his natural spawn conditions
+    <input type="checkbox" id="allowMisplacedTruffle"
+      onchange="event => allowMisplacedTruffle = event.target.checked" />
   </label>
 
   <div id="quickButtons"></div>

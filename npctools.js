@@ -1,5 +1,10 @@
 // take in name of one npc, biome, and neighbours (list of names of npcs)
 // return happiness of the one npc (pricing modifier) multiplied by the npc's weight
+/**
+ * @param {keyof typeof npcdict} name 
+ * @param {Biome[]} biome 
+ * @param {(keyof typeof npcdict)[]} townNpcs 
+ */
 function oneHappiness(name, biome, townNpcs) {
   let happ = 1.0;
   let npc = npcdict[name];
@@ -59,6 +64,7 @@ function oneHappiness(name, biome, townNpcs) {
 }
 
 
+/** @param {(keyof typeof npcdict)[]} group */
 function sumOfWeights(group) {
   let totalWeight = 0;
   for (const person of group) {
@@ -69,6 +75,7 @@ function sumOfWeights(group) {
 
 // input group of names of npcs
 // return array of the biome(s) which minimise happiness
+/** @param {(keyof typeof npcdict)[]} group */
 function bestBiomesForGroup(group) {
   let lowestHappinessSoFar = Infinity;
   let bestBiomesSoFar = [];
@@ -76,7 +83,7 @@ function bestBiomesForGroup(group) {
     // Skip any biome configuration where the truffle is improperly housed
     // Technically mods (like Fargo's) allow us to misplace the truffle
     // but it doesn't really matter that much
-    if (group.includes("Truffle") && (!biome.includes("Mushroom") || biome.includes("Caverns"))) { continue; }
+    if (!allowMisplacedTruffle && group.includes("Truffle") && (!biome.includes("Mushroom") || biome.includes("Caverns"))) { continue; }
     let thisBiomeHappiness = 0.0;
     for (const person of group) {
       thisBiomeHappiness += oneHappiness(person, biome, group);
@@ -92,7 +99,7 @@ function bestBiomesForGroup(group) {
   return bestBiomesSoFar;
 }
 
-// input group of names of npcs
+/** @param {(keyof typeof npcdict)[]} group */
 function groupHappWeightBiomes(group) {
   let bestBiomes = bestBiomesForGroup(group);
   let thisGroupHappiness = 0.0;

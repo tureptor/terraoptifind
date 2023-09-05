@@ -2,6 +2,7 @@ self.importScripts("npcdata.js","npctools.js")
 let biomes = []
 let covers = {}
 let timeSpen = 0
+let allowMisplacedTruffle = false;
 
 // used to generate all possible npc groups/combinations
 // same as itertools.combinations from python

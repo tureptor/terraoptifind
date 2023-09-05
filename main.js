@@ -1,4 +1,5 @@
 const people = Object.keys(npcdict);
+let allowMisplacedTruffle = false;
 
 function updateNumPossibleGroups() {
   // count number of npcs we can use
@@ -279,7 +280,7 @@ function startSearch() {
     biomes = biomes.concat(biomes2Rest, biomes3Rest);
   }
 
-  myWorker.postMessage([[npcdict, biomes], [peopleWeCanUse, minGroupSize, maxGroupSize, minBiomes]]);
+  myWorker.postMessage([[npcdict, biomes, allowMisplacedTruffle], [peopleWeCanUse, minGroupSize, maxGroupSize, minBiomes]]);
   myWorker.onmessage = function (e) { handleWorkerMessage(...e["data"]); };
 }
 
