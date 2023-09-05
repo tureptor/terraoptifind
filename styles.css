@@ -185,3 +185,11 @@ input[type="checkbox"] {
 td {
   text-align: center;
 }
+
+#quickButtons {
+  width: 100%;
+  height: 5.5em;
+  overflow-x: auto;
+  display: flex;
+  flex-flow: column wrap;
+}
