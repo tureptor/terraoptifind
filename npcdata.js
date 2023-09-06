@@ -42,16 +42,16 @@ const biomes3Rest = [
  * @prop {Biome} biome_liked - NPC's preferred biome
  * @prop {Biome} biome_disliked - NPC's unpreferred biome
  * @prop {Biome} biome_hated - NPC's most unpreferred biome
- * @prop {(keyof typeof npcdict)[]} loves - NPC's loved NPCs
- * @prop {(keyof typeof npcdict)[]} likes - NPC's liked NPCs
- * @prop {(keyof typeof npcdict)[]} dislikes - NPC's disliked NPCs
- * @prop {(keyof typeof npcdict)[]} hates - NPC's hated NPCs
+ * @prop {readonly (keyof typeof npcdict)[]} loves - NPC's loved NPCs
+ * @prop {readonly (keyof typeof npcdict)[]} likes - NPC's liked NPCs
+ * @prop {readonly (keyof typeof npcdict)[]} dislikes - NPC's disliked NPCs
+ * @prop {readonly (keyof typeof npcdict)[]} hates - NPC's hated NPCs
  * @prop {number} weighting - How much we care about this NPC
  * @prop {string} mod - Which mod (or vanilla) this NPC is from
  */
 
-/** @type {Record<string, NPCInfo>} */
-var npcdict = {
+
+var npcdict = /** @type {const} */ ({
     Guide: {
         biome_loved: Biome.None,
         biome_liked: Biome.Forest,
@@ -889,10 +889,13 @@ var npcdict = {
         weighting: 1.0,
         mod: "Fargo's Mod",
     },
-};
+});
+// HACK: trigger a type violation if there's a typo. Only triggers down here though, unfortunately
+/** @satisfies {Record<any, NPCInfo>} */ (npcdict);
+
 /**@type {Record<string, (keyof typeof npcdict)[]>} */
 const modNpcs = {};
-for (const [npcName, { mod }] of Object.entries(npcdict)) {
+for (const [npcName, {mod}] of Object.entries(npcdict)) {
     modNpcs[mod] ??= [];
-    modNpcs[mod].push(npcName);
+    modNpcs[mod].push(/** @type {keyof typeof npcdict} */(npcName));
 }
