@@ -1,90 +1,94 @@
 <!DOCTYPE html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" href="data:,">
-<style>
-body{color:#333;font-family:helvetica,arial,sans-serif;line-height:1.5;margin:0 auto;max-width:40em;padding:0 1em}h1,h2,h3,h4,h5,h6{margin:1.25em 0 .5em;line-height:1.2}a:link{color:#00e}a:visited{color:#518}a:focus,a:hover{color:#03f}a:active{color:#e00}h1 a:empty:before,h2 a:empty:before,h3 a:empty:before,h4 a:empty:before,h5 a:empty:before,h6 a:empty:before{content:"#"}h1 a:empty,h2 a:empty,h3 a:empty,h4 a:empty,h5 a:empty,h6 a:empty{visibility:hidden;padding-left:.25em}h1:hover a:empty,h2:hover a:empty,h3:hover a:empty,h4:hover a:empty,h5:hover a:empty,h6:hover a:empty{visibility:visible}img{max-width:100%}figure{margin:1em 0;text-align:center}figcaption{font-size:small}code,kbd,pre,samp{color:#009;font-family:monospace,monospace}pre kbd{color:#060}blockquote,pre{background:#eee;padding:.5em}pre{overflow:auto}blockquote{border-left:medium solid #ccc;margin:1em 0}blockquote :first-child{margin-top:0}blockquote :last-child{margin-bottom:0}table{border-collapse:collapse}td,th{border:thin solid #999;padding:.3em .4em;text-align:left}@media (prefers-color-scheme:dark){body{background:#111;color:#bbb}a:link{color:#9bf}a:visited{color:#caf}a:focus,a:hover{color:#9cf}a:active{color:#faa}code,kbd,pre,samp{color:#6cf}pre kbd{color:#9c6}blockquote,pre{background:#000}blockquote{border-color:#333}td,th{border-color:#666}}
+<html>
 
-input[type="checkbox"]{
-  width: 1.5em;
-  height: 1.5em;
-}
-</style>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./styles.css">
 </head>
 
-<div>
-  <label for="minGroupSize">Min num of NPCs per group:</label>
-  <input type="number" id="minGroupSize" min="1" max="25" value="1" onchange="updateNumPossibleGroups()">
-</div>
-<div>
-  <label for="maxGroupSize">Max num of NPCs per group:</label>
-  <input type="number" id="maxGroupSize" min="1" max="25" value="3" onchange="updateNumPossibleGroups()">
-</div>
+<body>
+  <div>
+    <label for="minGroupSize">Min num of NPCs per group:</label>
+    <input type="number" id="minGroupSize" min="1" max="25" value="1" onchange="updateNumPossibleGroups()">
+  </div>
+  <div>
+    <label for="maxGroupSize">Max num of NPCs per group:</label>
+    <input type="number" id="maxGroupSize" min="1" max="25" value="4" onchange="updateNumPossibleGroups()">
+  </div>
 
-<div>
-  <label>Number of possible groups:</label>
-  <output id="numPossibleGroups"></output>
-</div>
+  <label>Number of possible groups:
+    <output id="numPossibleGroups"></output>
+  </label>
 
-<div>
-  <div id="biomeTableDiv"></div>
-</div>
+  <div>
+    <div id="biomeTableDiv"></div>
+  </div>
 
-<button style="width:15em; height:4em" onclick="includePylonBiomes()">Select pylon biomes</button>
+  <button onclick="includePylonBiomes()">Select pylon biomes</button>
 
-<br>
-<label>Use naturally occuring hybrid biomes</label>
-<input type="checkbox" id="useBiomes2Natural">
-<br>
+  <label>Use naturally occuring hybrid biomes
+    <input type="checkbox" id="useBiomes2Natural" checked />
+  </label>
 
-<label>Use (easily) creatable hybrid biomes</label>
-<input type="checkbox" id="useBiomes2Easy">
-<br>
+  <label>Use (easily) creatable hybrid biomes
+    <input type="checkbox" id="useBiomes2Easy" checked />
+  </label>
 
-<label>Use the other feasible hybrid biomes</label>
-<input type="checkbox" id="useBiomes2Rest">
-<br>
+  <label>Use the other feasible hybrid biomes
+    <input type="checkbox" id="useBiomes2Rest" checked />
+  </label>
 
-<div style="overflow:scroll; height:15em">
-  <div id="npcTableDiv"></div>
-</div>
+  <label>Allow Truffle to be placed outside of his natural spawn conditions
+    <input type="checkbox" id="allowMisplacedTruffle"
+      onchange="event => allowMisplacedTruffle = event.target.checked" />
+  </label>
+
+  <div id="quickButtons"></div>
+
+  <div style="overflow:scroll; height:15em">
+    <div id="npcTableDiv"></div>
+  </div>
 
 
-<div>
-  <button style="width:10em; height:4em" onclick="startSearch()">Start search</button>
-</div>
+  <div>
+    <button id="start" onclick="startSearch()">Start search</button>
+  </div>
 
-<div>
-  <label>Branches pruned:</label>
-  <output id="branchesPruned">0</output>
-</div>
+  <label>Branches pruned:
+    <output id="branchesPruned">0</output>
+  </label>
 
-<div>
-  <label>Tentative solutions improved on:</label>
-  <output id="newBestSolutionsFound">0</output>
-</div>
+  <label>Tentative solutions improved on:
+    <output id="newBestSolutionsFound">0</output>
+  </label>
 
-<div>
-  <label>Time elapsed to generate cache (seconds):</label>
-  <output id="timeElapsedCache">0.000</output>
-</div>
+  <label>Cache generation progress:
+    <output id="cacheGenPercent">0.00%</output>
+  </label>
 
-<div>
-  <label>Time elapsed to find best solution(s) (seconds):</label>
-  <output id="timeElapsedSearch">0.000</output>
-</div>
+  <label>Time elapsed to generate cache (seconds):
+    <output id="timeElapsedCache">0.000</output>
+  </label>
 
-<div>
-  <p>Equally good solutions are listed in order of discovery.</p>
-</div>
+  <label>Time elapsed to find best solution(s) (seconds):
+    <output id="timeElapsedSearch">0.000</output>
+  </label>
 
-<div>
-  <div id="resultTableDiv"></div>
-</div>
+  <div>
+    <p>Equally good solutions are listed in order of discovery.</p>
+  </div>
 
-<div style="padding-bottom:10em"></div>
+  <div>
+    <div id="resultTableDiv"></div>
+  </div>
 
-<script src="npcdata.js"></script>
-<script src="npctools.js"></script>
-<script src="main.js"></script>
+  <div style="padding-bottom:10em"></div>
+
+  <script src="npcdata.js"></script>
+  <script src="npctools.js"></script>
+  <script src="main.js"></script>
+</body>
+
+</html>
