@@ -13,6 +13,9 @@ const Biome = {
     None: '',
 };
 
+const baseBiomes = ["Forest", "Hallow", "Caverns", "Desert", "Jungle", "Ocean", "Snow", "Mushroom"];
+const biomes1 = [["Forest"], ["Hallow"], ["Caverns"], ["Space"], ["Desert"], ["Jungle"], ["Ocean"], ["Snow"], ["Mushroom"]];
+
 const biomes2Natural = [
     ["Hallow", "Caverns"], ["Caverns", "Desert"], ["Caverns", "Jungle"], ["Caverns", "Ocean"], ["Caverns", "Snow"], ["Caverns", "Mushroom"],
     ['Space', 'Ocean'], ['Space', 'Forest'],
