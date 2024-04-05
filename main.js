@@ -288,7 +288,7 @@ function startSearch() {
     biomes = biomes.concat(biomes2Easy, biomes3Easy);
   }
   if (document.getElementById("useBiomes2Rest").checked) {
-    biomes = biomes.concat(biomes2Rest, biomes3Rest);
+    biomes = biomes.concat(biomes2Rest, biomes3Rest, biomes4Rest, biomes5Rest, biomes6Rest, biomes7Rest)
   }
 
   myWorker.postMessage([[npcdict, biomes, allowMisplacedTruffle], [peopleWeCanUse, minGroupSize, maxGroupSize, minBiomes]]);
