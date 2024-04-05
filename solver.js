@@ -228,7 +228,7 @@ class Searcher {
         let newPrefix = prefixPeople.slice();
         newPrefix.push(group);
         for (const person of group[0]) { remainingPeople.delete(person); }
-        let newPrefixHappiness = prefixHappiness + groupAvgHappiness;
+        let newPrefixHappiness = prefixHappiness + groupAvgHappiness * possibleGroups[i][3];
         this.findCombination(i + 1, newPrefix, newPrefixHappiness, remainingPeople, remainingMask & ~mask);
         for (const person of group[0]) { remainingPeople.add(person); }
       }
