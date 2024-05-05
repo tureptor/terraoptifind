@@ -44,16 +44,28 @@ function updateNumPossibleGroups() {
 
 function genBiomeTable() {
   let tableHTML = "<table>";
-  tableHTML += "<tr> <th>Biome</th> <th>Require pylon here?</th>";
+  tableHTML += "<tr> <th>Biome</th> <th>Include biome?</th> <th>Require pylon here?</th>";
   for (const biome of baseBiomes) {
     tableHTML += "<tr>";
     tableHTML += "<td>" + biome + "</td>";
     tableHTML += "<td style=\"text-align:center\"> <input style=\"width:1.5em; height:1.5em\"";
-    tableHTML += "type=\"checkbox\" id=\"" + biome + "Checkbox\"> </td>";
+    tableHTML += "type=\"checkbox\" id=\"" + biome + "IncludeCheckbox\" checked onchange=\"checkBiomePylon(this)\"> </td>";
+    tableHTML += "<td style=\"text-align:center\"> <input style=\"width:1.5em; height:1.5em\"";
+    tableHTML += "type=\"checkbox\" id=\"" + biome + "PylonCheckbox\"> </td>";
     tableHTML += "</tr>";
   }
   tableHTML += "</table>";
   document.getElementById('biomeTableDiv').innerHTML = tableHTML;
+}
+
+function checkBiomePylon(checkbox) {
+  let biome = checkbox.id.slice(0, -15);
+  if (!checkbox.checked) {
+    document.getElementById(biome + "PylonCheckbox").checked = false;
+    document.getElementById(biome + "PylonCheckbox").disabled = true;
+  } else {
+    document.getElementById(biome + "PylonCheckbox").disabled = false;
+  }
 }
 
 function includePylonBiomes() {
@@ -72,9 +84,9 @@ function genNPCtable() {
     return output;
   };
   header.replaceChildren(
-    td('NPC name', 'th'),
-    td('Include this NPC?', 'th'),
-    td('NPC importance (higher = more important)', 'th'),
+      td('NPC name', 'th'),
+      td('Include this NPC?', 'th'),
+      td('NPC importance (higher = more important)', 'th'),
   );
   let enableBox = (person) => {
     let output = document.createElement('input');
@@ -204,10 +216,10 @@ function showAllResults(data) {
     let solu = sortedData[i];
     output.innerHTML += "Above has:<br>";
     output.innerHTML += prevsolu.filter(x => !solu.map(y => JSON.stringify(y[0])).includes(JSON.stringify(x[0])))
-      .map(x => x[0].join(", ")).join("<br>") + "<br>";
+        .map(x => x[0].join(", ")).join("<br>") + "<br>";
     output.innerHTML += "<br>Below has:<br>";
     output.innerHTML += solu.filter(x => !prevsolu.map(y => JSON.stringify(y[0])).includes(JSON.stringify(x[0])))
-      .map(x => x[0].join(", ")).join("<br>") + "<br>";
+        .map(x => x[0].join(", ")).join("<br>") + "<br>";
     genResultsTable(solu);
   }
 }
@@ -268,13 +280,18 @@ function startSearch() {
       peopleWeCanUse.push(person);
       // don't allow non-positive values for the weighting
       npcdict[person]["weighting"] = Math.max(Number.EPSILON,
-        document.getElementById(person + "Weighting").value);
+          document.getElementById(person + "Weighting").value);
     }
   }
   let minBiomes = [];
   for (const biome of baseBiomes) {
-    if (document.getElementById(biome + "Checkbox").checked) {
-      minBiomes.push(biome);
+    if (document.getElementById(biome + "PylonCheckbox").checked) {
+      let biomeInclude = document.getElementById(biome + "IncludeCheckbox").checked;
+      if (biomeInclude) {
+        minBiomes.push(biome);
+      } else {
+        document.getElementById(biome + "PylonCheckbox").checked = false;
+      }
     }
   }
   let minGroupSize = document.getElementById("minGroupSize").value;
@@ -289,6 +306,12 @@ function startSearch() {
   }
   if (document.getElementById("useBiomes2Rest").checked) {
     biomes = biomes.concat(biomes2Rest, biomes3Rest, biomes4Rest, biomes5Rest, biomes6Rest, biomes7Rest)
+  }
+
+  for (const biome of baseBiomes) {
+    if (!document.getElementById(biome + "IncludeCheckbox").checked) {
+      biomes = biomes.filter(x => !x.includes(biome));
+    }
   }
 
   myWorker.postMessage([[npcdict, biomes, allowMisplacedTruffle], [peopleWeCanUse, minGroupSize, maxGroupSize, minBiomes]]);
